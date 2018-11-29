@@ -1612,10 +1612,10 @@ wp.correlation <- function(n = NULL, r = NULL, power = NULL, p = 0, rho0 = 0,
         p.body <- quote({
             delta <- sqrt(n - 3 - p) * (log((1 + r)/(1 - r))/2 + r/(n - 
                 1 - p)/2 * (1 + (5 + r^2)/(n - 1 - p)/4 + (11 + 2 * r^2 + 
-                2 * r^4)/(n - 1 - p)^2/8) - log((1 + rho0)/(1 - rho0))/2 - 
+                3 * r^4)/(n - 1 - p)^2/8) - log((1 + rho0)/(1 - rho0))/2 - 
                 rho0/(n - 1 - p)/2)
             v <- (n - 3 - p)/(n - 1 - p) * (1 + (4 - r^2)/(n - 1 - p)/2 + 
-                (22 - 6 * r^2 - 2 * r^4)/(n - 1 - p)^2/6)
+                (22 - 6 * r^2 - 3 * r^4)/(n - 1 - p)^2/6)
             zalpha <- qnorm(1 - alpha)
             pnorm((delta - zalpha)/sqrt(v))
         })
@@ -1624,10 +1624,10 @@ wp.correlation <- function(n = NULL, r = NULL, power = NULL, p = 0, rho0 = 0,
         p.body <- quote({
             delta <- sqrt(n - 3 - p) * (log((1 + r)/(1 - r))/2 + r/(n - 
                 1 - p)/2 * (1 + (5 + r^2)/(n - 1 - p)/4 + (11 + 2 * r^2 + 
-                2 * r^4)/(n - 1 - p)^2/8) - log((1 + rho0)/(1 - rho0))/2 - 
+                3 * r^4)/(n - 1 - p)^2/8) - log((1 + rho0)/(1 - rho0))/2 - 
                 rho0/(n - 1 - p)/2)
             v <- (n - 3 - p)/(n - 1 - p) * (1 + (4 - r^2)/(n - 1 - p)/2 + 
-                (22 - 6 * r^2 - 2 * r^4)/(n - 1 - p)^2/6)
+                (22 - 6 * r^2 - 3 * r^4)/(n - 1 - p)^2/6)
             zalpha <- qnorm(1 - alpha)
             pnorm((-delta - zalpha)/sqrt(v))
         })
@@ -1636,10 +1636,10 @@ wp.correlation <- function(n = NULL, r = NULL, power = NULL, p = 0, rho0 = 0,
         p.body <- quote({
             delta <- sqrt(n - 3 - p) * (log((1 + r)/(1 - r))/2 + r/(n - 
                 1 - p)/2 * (1 + (5 + r^2)/(n - 1 - p)/4 + (11 + 2 * r^2 + 
-                2 * r^4)/(n - 1 - p)^2/8) - log((1 + rho0)/(1 - rho0))/2 - 
+                3 * r^4)/(n - 1 - p)^2/8) - log((1 + rho0)/(1 - rho0))/2 - 
                 rho0/(n - 1 - p)/2)
             v <- (n - 3 - p)/(n - 1 - p) * (1 + (4 - r^2)/(n - 1 - p)/2 + 
-                (22 - 6 * r^2 - 2 * r^4)/(n - 1 - p)^2/6)
+                (22 - 6 * r^2 - 3 * r^4)/(n - 1 - p)^2/6)
             zalpha <- qnorm(1 - alpha/2)
             pnorm((delta - zalpha)/sqrt(v)) + pnorm((-delta - zalpha)/sqrt(v))
         })
