@@ -689,10 +689,11 @@ wp.effect.MRT3arm <- function(file) {
 }
 
 nuniroot <- function(f, interval, maxlength = 100) {
-    x <- seq(min(interval), max(interval), length = maxlength)
+    if (length(interval)!=2) stop("Please provide an interval with two values such as c(0,1).")
+	x <- seq(min(interval), max(interval), length = maxlength)
     f.out <- f(x)
     if (min(f.out) * max(f.out) > 0) 
-        stop("The specified parameters do not yield valid results.") else {
+        stop("The specified parameters do not yield valid results. Please try to supply a different interval, e.g., using interval=c(0,1), for your parameter.") else {
         low <- max(f.out[f.out < 0])
         high <- min(f.out[f.out > 0])
         interval <- c(x[f.out == low][1], x[f.out == high][1])
@@ -702,7 +703,7 @@ nuniroot <- function(f, interval, maxlength = 100) {
 
 ####################################################### function for cluster randomized trials with 2 arms##
 wp.crt2arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL, 
-    alpha = 0.05, alternative = c("two.sided", "one.sided")) {
+    alpha = 0.05, alternative = c("two.sided", "one.sided"), interval = NULL) {
     alternative <- alternative[1]
     if (sum(sapply(list(J, n, f, icc, alpha, power), is.null)) != 1) 
         stop("exactly one of J, n, f, icc, and alpha,power must be NULL")
@@ -741,12 +742,11 @@ wp.crt2arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
     #### 
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(J)) 
-        J <- nuniroot(function(J) eval(p.body) - power, c(2 + 1e-10, 1000))$root else if (is.null(n)) 
-        n <- nuniroot(function(n) eval(p.body) - power, c(1, 1e+06))$root else if (is.null(f)) 
-        f <- nuniroot(function(f) eval(p.body) - power, c(1e-07, 1e+07))$root else if (is.null(icc)) 
-        icc <- nuniroot(function(icc) eval(p.body) - power, c(0, 1))$root else if (is.null(alpha)) 
-        alpha <- nuniroot(function(alpha) eval(p.body) - power, c(1e-10, 
-            1 - 1e-10))$root else stop("internal error")
+        J <- nuniroot(function(J) eval(p.body) - power, ifelse(is.null(interval), c(2 + 1e-10, 1000), interval))$root else if (is.null(n)) 
+        n <- nuniroot(function(n) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1, 1e+06), interval))$root else if (is.null(f)) 
+        f <- nuniroot(function(f) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else if (is.null(icc)) 
+        icc <- nuniroot(function(icc) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(0, 1), interval))$root else if (is.null(alpha)) 
+        alpha <- nuniroot(function(alpha) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-10, 1 - 1e-10), interval))$root else stop("internal error")
     
     NOTE <- "n is the number of subjects per cluster."
     METHOD <- "Cluster randomized trials with 2 arms"
@@ -757,7 +757,7 @@ wp.crt2arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
 ####################################################### function for cluster randomized trials with 3 arms##
 wp.crt3arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL, 
     alpha = 0.05, alternative = c("two.sided", "one.sided"), type = c("main", 
-        "treatment", "omnibus")) {
+        "treatment", "omnibus"), interval = NULL) {
     side <- alternative[1]
     type <- type[1]
     
@@ -833,12 +833,11 @@ wp.crt3arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
     #### 
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(J)) 
-        J <- nuniroot(function(J) eval(p.body) - power, c(3 + 1e-10, 1000))$root else if (is.null(n)) 
-        n <- nuniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 1e+06))$root else if (is.null(f)) 
-        f <- nuniroot(function(f) eval(p.body) - power, c(1e-07, 1e+07))$root else if (is.null(icc)) 
-        icc <- nuniroot(function(icc) eval(p.body) - power, c(0, 1))$root else if (is.null(alpha)) 
-        alpha <- nuniroot(function(alpha) eval(p.body) - power, c(1e-10, 
-            1 - 1e-10))$root else stop("internal error")
+        J <- nuniroot(function(J) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(3 + 1e-10, 1000), interval))$root else if (is.null(n)) 
+        n <- nuniroot(function(n) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(2 + 1e-10, 1e+06), interval))$root else if (is.null(f)) 
+        f <- nuniroot(function(f) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else if (is.null(icc)) 
+        icc <- nuniroot(function(icc) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(0, 1), interval))$root else if (is.null(alpha)) 
+        alpha <- nuniroot(function(alpha) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-10, 1 - 1e-10), interval))$root else stop("internal error")
     
     NOTE <- "n is the number of subjects per cluster."
     METHOD <- "Cluster randomized trials with 3 arms"
@@ -851,7 +850,7 @@ wp.crt3arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
 ######################################################### function for multisite randomized trials with 2 arms##
 wp.mrt2arm <- function(n = NULL, f = NULL, J = NULL, tau00 = NULL, tau11 = NULL, 
     sg2 = NULL, power = NULL, alpha = 0.05, alternative = c("two.sided", 
-        "one.sided"), type = c("main", "site", "variance")) {
+        "one.sided"), type = c("main", "site", "variance"), interval = NULL) {
     type <- type[1]
     side <- alternative[1]
     if (sum(sapply(list(f, n, J, power), is.null)) != 1 & type == 1) 
@@ -924,9 +923,9 @@ wp.mrt2arm <- function(n = NULL, f = NULL, J = NULL, tau00 = NULL, tau11 = NULL,
     #### 
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(J)) 
-        J <- nuniroot(function(J) eval(p.body) - power, c(1 + 1e-10, 1000))$root else if (is.null(n)) 
-        n <- nuniroot(function(n) eval(p.body) - power, c(3 - 1e-10, 1e+06))$root else if (is.null(f) & type == 1) 
-        f <- nuniroot(function(f) eval(p.body) - power, c(1e-07, 1e+07))$root else stop("internal error")
+        J <- nuniroot(function(J) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1 + 1e-10, 1000), interval))$root else if (is.null(n)) 
+        n <- nuniroot(function(n) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(3 - 1e-10, 1e+06), interval))$root else if (is.null(f) & type == 1) 
+        f <- nuniroot(function(f) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else stop("internal error")
     
     NOTE <- "n is the number of subjects per cluster"
     METHOD <- "Multisite randomized trials with 2 arms"
@@ -940,7 +939,7 @@ wp.mrt2arm <- function(n = NULL, f = NULL, J = NULL, tau00 = NULL, tau11 = NULL,
 ######################################################### function for multisite randomized trials with 3 arms##
 wp.mrt3arm <- function(n = NULL, f1 = NULL, f2 = NULL, J = NULL, tau = NULL, 
     sg2 = NULL, power = NULL, alpha = 0.05, alternative = c("two.sided", 
-        "one.sided"), type = c("main", "treatment", "omnibus")) {
+        "one.sided"), type = c("main", "treatment", "omnibus"), interval = NULL) {
     type <- type[1]
     side <- alternative[1]
     
@@ -1034,10 +1033,10 @@ wp.mrt3arm <- function(n = NULL, f1 = NULL, f2 = NULL, J = NULL, tau = NULL,
     #### 
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(J)) 
-        J <- nuniroot(function(J) eval(p.body) - power, c(2 - 1e-10, 1000))$root else if (is.null(n)) 
-        n <- nuniroot(function(n) eval(p.body) - power, c(3 - 1e-10, 1e+07))$root else if (is.null(f1) && type != 2) 
-        f1 <- nuniroot(function(f1) eval(p.body) - power, c(1e-07, 1e+07))$root else if (is.null(f2) && type != 1) 
-        f2 <- nuniroot(function(f2) eval(p.body) - power, c(1e-07, 1e+07))$root else stop("internal error")
+        J <- nuniroot(function(J) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(2 - 1e-10, 1000), interval))$root else if (is.null(n)) 
+        n <- nuniroot(function(n) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(3 - 1e-10, 1e+07), interval))$root else if (is.null(f1) && type != 2) 
+        f1 <- nuniroot(function(f1) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else if (is.null(f2) && type != 1) 
+        f2 <- nuniroot(function(f2) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else stop("internal error")
     
     NOTE <- "n is the number of subjects per cluster"
     METHOD <- "Multisite randomized trials with 3 arms"
@@ -1465,7 +1464,7 @@ wp.logistic <- function(n = NULL, p0 = NULL, p1 = NULL, alpha = 0.05, power = NU
 }
 
 wp.mediation <- function(n = NULL, power = NULL, a = 0.5, b = 0.5, varx = 1, 
-    vary = 1, varm = 1, alpha = 0.05) {
+    vary = 1, varm = 1, alpha = 0.05, interval = NULL) {
     if (sum(sapply(list(n, a, b, varx, varm, vary, power, alpha), is.null)) != 
         1) 
         stop("exactly one of n, a, b, varx, varm, vary, power, and alpha must be NULL")
@@ -1489,21 +1488,17 @@ wp.mediation <- function(n = NULL, power = NULL, a = 0.5, b = 0.5, varx = 1,
     
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(n)) 
-        n <- uniroot(function(n) eval(p.body) - power, c(1e-10, 1e+07))$root else if (is.null(a)) {
+        n <- uniroot(function(n) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else if (is.null(a)) {
         astart <- varm/varx
         alow <- -sqrt(astart) + 1e-06
         aup <- sqrt(astart) - 1e-06
         a <- nuniroot(function(a) eval(p.body) - power, c(alow, aup))$root
     } else if (is.null(b)) 
-        b <- nuniroot(function(b) eval(p.body) - power, c(-10, 10))$root else if (is.null(varx)) 
-        varx <- nuniroot(function(varx) eval(p.body) - power, c(1e-10, 
-            1e+07))$root else if (is.null(vary)) 
-        vary <- nuniroot(function(vary) eval(p.body) - power, c(1e-10, 
-            1e+07))$root else if (is.null(varm)) 
-        varm <- nuniroot(function(varm) eval(p.body) - power, c(1e-10, 
-            1e+07))$root else if (is.null(alpha)) 
-        alpha <- nuniroot(function(alpha) eval(p.body) - power, c(1e-10, 
-            1 - 1e-10))$root else stop("internal error")
+        b <- nuniroot(function(b) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(-10, 10), interval))$root else if (is.null(varx)) 
+        varx <- nuniroot(function(varx) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-10, 1e+07), interval))$root else if (is.null(vary)) 
+        vary <- nuniroot(function(vary) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-10, 1e+07), interval))$root else if (is.null(varm)) 
+        varm <- nuniroot(function(varm) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-10, 1e+07), interval))$root else if (is.null(alpha)) 
+        alpha <- nuniroot(function(alpha) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-10, 1 - 1e-10), interval))$root else stop("internal error")
     
     METHOD <- "Power for simple mediation"
     URL <- "http://psychstat.org/mediation"
