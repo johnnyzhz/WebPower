@@ -5,7 +5,7 @@
 \title{Statistical Power Analysis for Cluster Randomized Trials with 2 Arms}
 \usage{
 wp.crt2arm(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
-  alpha = 0.05, alternative = c("two.sided", "one.sided"))
+  alpha = 0.05, alternative = c("two.sided", "one.sided"), interval = NULL)
 }
 \arguments{
 \item{n}{Sample size. It is the number of individuals within each cluster.}
@@ -22,6 +22,7 @@ It quantifies the degree to which two randomly drawn observations within a clust
 \item{alpha}{significance level chosed for the test. It equals 0.05 by default.}
 
 \item{alternative}{Type of the alternative hypothesis (\code{"two.sided"} or \code{"one.sided"}). The default is "two.sided". The option "one.sided" can be either "less" or "greater".}
+\item{interval}{A vector containing the end-points of the interval to be searched for the root.}
 }
 \value{
 An object of the power analysis.

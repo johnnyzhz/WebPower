@@ -6,7 +6,7 @@
 \usage{
 wp.mrt3arm(n = NULL, f1 = NULL, f2 = NULL, J = NULL, tau = NULL,
   sg2 = NULL, power = NULL, alpha = 0.05, alternative = c("two.sided",
-  "one.sided"), type = c("main", "treatment", "omnibus"))
+  "one.sided"), type = c("main", "treatment", "omnibus"), interval = NULL)
 }
 \arguments{
 \item{n}{Sample size. It is the number of individuals within each cluster.}
@@ -31,6 +31,8 @@ wp.mrt3arm(n = NULL, f1 = NULL, f2 = NULL, J = NULL, tau = NULL,
 The type "main" tests the difference between the average tratment arms and the contraol arm;
 Type "treatment" tests the difference between the two treatment arms;
 and Type "omnibus" tests whether the three arms are all equivalent.}
+\item{interval}{A vector containing the end-points of the interval to be searched for the root.}
+
 }
 \value{
 An object of the power analysis.

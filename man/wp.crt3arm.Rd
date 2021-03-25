@@ -6,7 +6,7 @@
 \usage{
 wp.crt3arm(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
   alpha = 0.05, alternative = c("two.sided", "one.sided"),
-  type = c("main", "treatment", "omnibus"))
+  type = c("main", "treatment", "omnibus"), interval = NULL)
 }
 \arguments{
 \item{n}{Sample size. It is the number of individuals within each cluster.}
@@ -29,6 +29,8 @@ It quantifies the degree to which two randomly drawn observations within a clust
 The type "main" tests the difference between the average tratment arms and the control arm;
 Type "treatment" tests the differnce between the two treament arms;
 and Type "omnibus" tests whether the tree arms are all equivalent.}
+\item{interval}{A vector containing the end-points of the interval to be searched for the root.}
+
 }
 \value{
 An object of the power analysis.

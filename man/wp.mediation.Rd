@@ -5,7 +5,7 @@
 \title{Statistical Power Analysis for Simple Mediation}
 \usage{
 wp.mediation(n = NULL, power = NULL, a = 0.5, b = 0.5, varx = 1,
-  vary = 1, varm = 1, alpha = 0.05)
+  vary = 1, varm = 1, alpha = 0.05, interval = NULL)
 }
 \arguments{
 \item{n}{Sample size.}
@@ -23,6 +23,8 @@ wp.mediation(n = NULL, power = NULL, a = 0.5, b = 0.5, varx = 1,
 \item{varm}{Variance of m. The default value is 1.}
 
 \item{alpha}{significance level chosed for the test. It equals 0.05 by default.}
+\item{interval}{A vector containing the end-points of the interval to be searched for the root.}
+
 }
 \value{
 An object of the power analysis.

@@ -5,7 +5,7 @@
 \title{Statistical Power Analysis for Linear Regression}
 \usage{
 wp.regression(n = NULL, p1 = NULL, p2 = 0, f2 = NULL, alpha = 0.05,
-  power = NULL)
+  power = NULL, type=c("regular", "Cohen"))
 }
 \arguments{
 \item{n}{Sample size.}
@@ -17,11 +17,12 @@ wp.regression(n = NULL, p1 = NULL, p2 = 0, f2 = NULL, alpha = 0.05,
 \item{f2}{Effect size.
 We use the statistic f2 as the measure of effect size for linear regression proposed by \cite{Cohen(1988, p.410)}.
 \cite{Cohen} discussed the effect size in three different cases.
-The calculatation of f2 can be generalized using the idea of a full model and a reduced model by \cite{Maxwell and Delaney (2003)}.}
+The calculation of f2 can be generalized using the idea of a full model and a reduced model by \cite{Maxwell and Delaney (2003)}.}
 
-\item{alpha}{significance level chosed for the test. It equals 0.05 by default.}
+\item{alpha}{significance level chosen for the test. It equals 0.05 by default.}
 
 \item{power}{Statistical power.}
+\item{type}{If set to "Cohen", the formula used in the Cohen's book will be used (not recommended).}
 }
 \value{
 An object of the power analysis
