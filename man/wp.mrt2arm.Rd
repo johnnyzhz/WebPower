@@ -83,7 +83,7 @@ res<- wp.mrt2arm(n = 45, f = 0.5, J = 20, tau11 = 0.5,
 #  URL: http://psychstat.org/mrt2arm
 
 #To generate a power curve given a sequence of sample sizes:
-wp.mrt2arm(n = seq(10,50,5), f = 0.5, J = 20, tau11 = 0.5,
+res <- wp.mrt2arm(n = seq(10,50,5), f = 0.5, J = 20, tau11 = 0.5,
                           sg2 = 1.25, alpha = 0.05, power = NULL)
 #  Power analysis for Multileve model Multisite randomized trials with 2 arms
 #
