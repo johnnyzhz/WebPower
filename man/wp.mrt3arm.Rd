@@ -105,7 +105,7 @@ res
 #    URL: http://psychstat.org/mrt3arm
 
 #To plot the power curve:
-plot(res) 
+plot(res, "J", "power")
 
 #To calculate the required sample size given power and effect size:
 wp.mrt3arm(n = NULL, f1 = 0.43, J = 20, tau = 0.4,
