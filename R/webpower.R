@@ -521,7 +521,7 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
 ## column is the condition variable (0 for control, 1 for condition).
 ## The first line of the data should be the variable names.
 wp.effect.CRT2arm <- function(file) {
-    if (file.exists(file)){
+    if (is.character(file)){
 		dat <- read.table(file, header = TRUE)
 	}else{
 		dat <- file
@@ -560,7 +560,7 @@ wp.effect.CRT2arm <- function(file) {
 ## for treatment2).  The first line of the data should be the variable
 ## names.
 wp.effect.CRT3arm <- function(file) {
-    if (file.exists(file)){
+    if (is.character(file)){
 		dat <- read.table(file, header = TRUE)
 	}else{
 		dat <- file
@@ -609,7 +609,7 @@ wp.effect.CRT3arm <- function(file) {
 ## (0 for control, 1 for condition).  The first line of the data should
 ## be the variable names.
 wp.effect.MRT2arm <- function(file) {
-    if (file.exists(file)){
+    if (is.character(file)){
 		dat <- read.table(file, header = TRUE)
 	}else{
 		dat <- file
@@ -649,7 +649,7 @@ wp.effect.MRT2arm <- function(file) {
 ## (0 for control, 1 for treatment1, 2 for treatment2).  The first line
 ## of the data should be the variable names.
 wp.effect.MRT3arm <- function(file) {
-    if (file.exists(file)){
+    if (is.character(file)){
 		dat <- read.table(file, header = TRUE)
 	}else{
 		dat <- file
