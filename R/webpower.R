@@ -1046,8 +1046,9 @@ wp.mrt3arm <- function(n = NULL, f1 = NULL, f2 = NULL, J = NULL, tau = NULL,
         class = "webpower")
 }
 
-wp.regression <- function(n = NULL, p1 = NULL, p2 = 0, f2 = NULL, alpha = 0.05, 
-    power = NULL) {
+wp.regression <- function (n = NULL, p1 = NULL, p2 = 0, 
+f2 = NULL, alpha = 0.05, power = NULL, 
+type=c("regular", "Cohen")){
     if (sum(sapply(list(n, f2, power, alpha), is.null)) != 1) 
         stop("exactly one of n, f2, power, and alpha must be NULL")
     if (!is.null(f2) && min(f2) < 0) 
@@ -1058,29 +1059,38 @@ wp.regression <- function(n = NULL, p1 = NULL, p2 = 0, f2 = NULL, alpha = 0.05,
         stop("number of predictor in the full model has to be larger than 1")
     if (!is.null(p2) && p1 < p2) 
         stop("number of predictor in the full model has to be larger than that in the reduced model")
-    if (!is.null(alpha) && !is.numeric(alpha) || any(0 > alpha | alpha > 
-        1)) 
+    if (!is.null(alpha) && !is.numeric(alpha) || any(0 > alpha | 
+        alpha > 1)) 
         stop(sQuote("alpha"), " must be numeric in [0, 1]")
-    if (!is.null(power) && !is.numeric(power) || any(0 > power | power > 
-        1)) 
+    if (!is.null(power) && !is.numeric(power) || any(0 > power | 
+        power > 1)) 
         stop(sQuote("power"), " must be numeric in [0, 1]")
     p.body <- quote({
         u <- p1 - p2
         v <- n - p1 - 1
-        lambda <- f2 * (u + v + 1)
+        if (type[1]=="Cohen"){
+			lambda <- f2 * (u + v + 1)
+		}else{
+			lambda <- f2 * n
+			}
         pf(qf(alpha, u, v, lower = FALSE), u, v, lambda, lower = FALSE)
     })
     if (is.null(power)) 
-        power <- eval(p.body) else if (is.null(n)) 
-        n <- uniroot(function(n) eval(p.body) - power, c(5 + p1 + 1e-10, 
-            1e+05))$root else if (is.null(f2)) 
-        f2 <- uniroot(function(f2) eval(p.body) - power, c(1e-07, 1e+07))$root else if (is.null(alpha)) 
-        alpha <- uniroot(function(alpha) eval(p.body) - power, c(1e-10, 
-            1 - 1e-10))$root else stop("internal error")
+        power <- eval(p.body)
+    else if (is.null(n)) 
+        n <- uniroot(function(n) eval(p.body) - power, c(5 + 
+            p1 + 1e-10, 1e+05))$root
+    else if (is.null(f2)) 
+        f2 <- uniroot(function(f2) eval(p.body) - power, c(1e-07, 
+            1e+07))$root
+    else if (is.null(alpha)) 
+        alpha <- uniroot(function(alpha) eval(p.body) - power, 
+            c(1e-10, 1 - 1e-10))$root
+    else stop("internal error")
     METHOD <- "Power for multiple regression"
     URL <- "http://psychstat.org/regression"
-    structure(list(n = n, p1 = p1, p2 = p2, f2 = f2, alpha = alpha, power = power, 
-        method = METHOD, url = URL), class = "webpower")
+    structure(list(n = n, p1 = p1, p2 = p2, f2 = f2, alpha = alpha, 
+        power = power, method = METHOD, url = URL), class = "webpower")
 }
 
 wp.logistic <- function(n = NULL, p0 = NULL, p1 = NULL, alpha = 0.05, power = NULL, 
