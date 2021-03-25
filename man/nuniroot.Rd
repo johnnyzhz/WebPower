@@ -2,7 +2,7 @@
 % Please edit documentation in R/webpower.R
 \name{nuniroot}
 \alias{nuniroot}
-\title{Sove An Single Equation}
+\title{Solve A Single Equation}
 \usage{
 nuniroot(f, interval, maxlength = 100)
 }
@@ -25,7 +25,7 @@ The argument interval is for the input of x, the corresponding outcome interval 
 \examples{
 \donttest{
 f <- function(x) 1+x-0.5*x^2
-interval <- c(-3,-2,1,2,6)
+interval <- c(-3,6)
 nuniroot(f,interval)
 }
 

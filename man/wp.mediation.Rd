@@ -22,7 +22,7 @@ wp.mediation(n = NULL, power = NULL, a = 0.5, b = 0.5, varx = 1,
 
 \item{varm}{Variance of m. The default value is 1.}
 
-\item{alpha}{significance level chosed for the test. It equals 0.05 by default.}
+\item{alpha}{significance level chosen for the test. It equals 0.05 by default.}
 \item{interval}{A vector containing the end-points of the interval to be searched for the root.}
 
 }

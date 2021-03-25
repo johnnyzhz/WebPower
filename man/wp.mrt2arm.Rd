@@ -38,8 +38,8 @@ and Type "variance" tests variance of treatment effects, no tau00 or f needed.}
 An object of the power analysis.
 }
 \description{
-Multisite randomized trials (MRT) are a type of multilevel design for the situation when the entire cluster is randomly assigned to either a treatment arm or a contral arm \cite{(Liu, 2013)}.
-The data from MRT can be analyzed in a two-level hierachical linear model, where the indicator variable for treatment assignment is included in first level. If a study contains multiple treatments, then mutiple indicators will be used.
+Multisite randomized trials (MRT) are a type of multilevel design for the situation when the entire cluster is randomly assigned to either a treatment arm or a control arm \cite{(Liu, 2013)}.
+The data from MRT can be analyzed in a two-level hierarchical linear model, where the indicator variable for treatment assignment is included in first level. If a study contains multiple treatments, then multiple indicators will be used.
 This function is for designs with 2 arms (i.e., a treatment and a control).
 Three types of tests are considered in the function: (1) The "main" type tests treatment main effect;
 (2) The "site" type tests the variance of cluster/site means;
