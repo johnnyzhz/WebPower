@@ -52,7 +52,7 @@ wp.rmanova(n=30, ng=3, nm=4, f=0.36, nscor=0.7)
 #  URL: http://psychstat.org/rmanova
 
 #To generate a power curve given a sequence of sample sizes:
-wp.rmanova(n=seq(30,150,20), ng=3, nm=4, f=0.36, nscor=0.7)
+res <- wp.rmanova(n=seq(30,150,20), ng=3, nm=4, f=0.36, nscor=0.7)
 #  Repeated-measures ANOVA analysis
 #
 #      n    f ng nm nscor alpha     power
