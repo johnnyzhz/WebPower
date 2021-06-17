@@ -440,7 +440,7 @@ wp.t2 <- function(n1 = NULL, n2 = NULL, d = NULL, alpha = 0.05, power = NULL,
 
 ## function for repeated measures anova analysis
 wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1, 
-    alpha = 0.05, power = NULL, type = 0) {
+    alpha = 0.05, power = NULL, type = 0, r = 0) {
     if (sum(sapply(list(n, ng, nm, f, nscor, power, alpha), is.null)) != 
         1) 
         stop("exactly one of n, ng, nm, power, and alpha must be NULL")
@@ -461,6 +461,8 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
     if (!is.null(power) && !is.numeric(power) || any(0 > power | power > 
         1)) 
         stop(sQuote("power"), " must be numeric in [0, 1]")
+    if (abs(r) > 1 | !is.numeric(r))
+       stop("Correlation between measurements must be numeric in [-1;1]")
     ## function to evaluate
     if (type == 0) {
         p.body <- quote({
@@ -474,7 +476,7 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
         p.body <- quote({
             df1 <- (nm - 1) * nscor
             df2 <- (n - ng) * df1
-            lambda <- f^2 * n * nscor
+            lambda <- (f^2 * n * nscor * nm) / (1 - abs(r))
             pf(qf(alpha, df1, df2, lower = FALSE), df1, df2, lambda, lower = FALSE)
         })
     }
@@ -488,7 +490,7 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
     }
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(n)) {
-        n <- uniroot(function(n) eval(p.body) - power, c(5 + ng, 1e+07))$root
+        n <- uniroot(function(n) eval(p.body) - power, c(1 + 1e-10, 1e+07))$root
     } else if (is.null(ng)) {
         ndf <- uniroot(function(ng) eval(p.body) - power, c(1 + 1e-10, 
             1e+05))$root
