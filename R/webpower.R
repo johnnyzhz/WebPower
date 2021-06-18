@@ -461,8 +461,8 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
     if (!is.null(power) && !is.numeric(power) || any(0 > power | power > 
         1)) 
         stop(sQuote("power"), " must be numeric in [0, 1]")
-    if (abs(r) > 1 | !is.numeric(r))
-       stop("Correlation between measurements must be numeric in [-1;1]")
+    if (abs(r) >= 1 | !is.numeric(r))
+       stop("Average correlation between measurements must be numeric in ]-1, 1[")
     ## function to evaluate
     if (type == 0) {
         p.body <- quote({
