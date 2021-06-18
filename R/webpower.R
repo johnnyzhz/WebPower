@@ -461,8 +461,8 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
     if (!is.null(power) && !is.numeric(power) || any(0 > power | power > 
         1)) 
         stop(sQuote("power"), " must be numeric in [0, 1]")
-    if (abs(r) >= 1 | !is.numeric(r))
-       stop("Average correlation between measurements must be numeric in ]-1, 1[")
+    if (r >= 1 | r < -1 | !is.numeric(r))
+       stop("Average correlation between measurements must be numeric in [-1, 1[")
     ## function to evaluate
     if (type == 0) {
         p.body <- quote({
@@ -476,7 +476,7 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
         p.body <- quote({
             df1 <- (nm - 1) * nscor
             df2 <- (n - ng) * df1
-            lambda <- (f^2 * n * nscor * nm) / (1 - abs(r))
+            lambda <- (f^2 * n * nscor * nm) / (1 - r)
             pf(qf(alpha, df1, df2, lower = FALSE), df1, df2, lambda, lower = FALSE)
         })
     }
