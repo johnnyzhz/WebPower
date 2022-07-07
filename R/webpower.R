@@ -864,11 +864,11 @@ wp.rmanova <-
         uniroot(function(n)
           eval(p.body) - power, c(5 + ng, 1e+07))$root
     } else if (is.null(ng)) {
-      ndf <- uniroot(function(ng)
+      ng <- uniroot(function(ng)
         eval(p.body) - power, c(1 + 1e-10,
                                 1e+05))$root
     } else if (is.null(nm)) {
-      ng <-
+      nm <-
         uniroot(function(nm)
           eval(p.body) - power, c(1e-07, 1e+07))$root
     } else if (is.null(f)) {
@@ -1375,9 +1375,9 @@ wp.mrt2arm <-
            interval = NULL) {
     type <- type[1]
     side <- alternative[1]
-    if (sum(sapply(list(f, n, J, power), is.null)) != 1 & type == 1)
+    if (sum(sapply(list(f, n, J, power), is.null)) != 1 & type == "main")
       stop("exactly one of f, J, n and power must be NULL")
-    if (sum(sapply(list(n, J, power), is.null)) != 1 & type != 1)
+    if (sum(sapply(list(n, J, power), is.null)) != 1 & type != "main")
       stop("exactly one of J, n and power must be NULL")
     if (!is.null(f) && min(f) < 0)
       stop("Effect size must be positive")
@@ -1401,9 +1401,9 @@ wp.mrt2arm <-
                                   1))
       stop("Power must be numeric in [0, 1]")
     
-    if (is.null(tau11) && (type == 1 || type == 3))
+    if (is.null(tau11) && (type == "main" || type == "variance"))
       stop("For this type of test, variance of treatment main effects across sites must be specified")
-    if (is.null(tau00) && type == 2)
+    if (is.null(tau00) && type == "site")
       stop("For this type of test, variance of site means must be specified")
     
     ## test treatment main effect #no tau00 needed
@@ -1804,7 +1804,7 @@ wp.logistic <-
                                   1e+07))$root
     }
     
-    if (family == "exponential") {
+    else if (family == "exponential") {
       ## Exponential predictor
       if (is.null(parameter)) {
         lambda <- 1
@@ -1874,7 +1874,7 @@ wp.logistic <-
     }
     
     
-    if (family == "lognormal") {
+    else if (family == "lognormal") {
       g <- 0
       if (is.null(parameter)) {
         mu <- 0
@@ -1956,7 +1956,7 @@ wp.logistic <-
     
     
     
-    if (family == "normal") {
+    else if (family == "normal") {
       g <- 0
       
       if (is.null(parameter)) {
@@ -2039,7 +2039,7 @@ wp.logistic <-
     }
     
     
-    if (family == "Poisson") {
+    else if (family == "Poisson") {
       g <- 0
       
       if (is.null(parameter)) {
@@ -2106,7 +2106,7 @@ wp.logistic <-
       
     }
     
-    if (family == "uniform") {
+    else if (family == "uniform") {
       g <- 0
       if (is.null(parameter)) {
         L <- 0
@@ -2177,6 +2177,18 @@ wp.logistic <-
           eval(p.body) - power, c(2 + 1e-10,
                                   1e+07))$root
     }
+    else {
+      stop(
+        sQuote("family"),
+        " must be one of `Bernoulli`,
+                      `exponential`,
+                      `lognormal`,
+                      `normal`,
+                      `Poisson`,
+                      `uniform`"
+      )
+    }
+    
     
     METHOD <- "Power for logistic regression"
     URL <- "http://psychstat.org/logistic"
@@ -2594,7 +2606,7 @@ wp.poisson <-
       }
     }
     
-    if (family == "exponential") {
+    else if (family == "exponential") {
       ## exponential predictor
       if (is.null(parameter)) {
         lambda <- 1
@@ -2644,7 +2656,7 @@ wp.poisson <-
       
     }
     
-    if (family == "lognormal") {
+    else if (family == "lognormal") {
       if (is.null(parameter)) {
         mu <- 0
         sigma <- 1
@@ -2713,7 +2725,7 @@ wp.poisson <-
     
     
     
-    if (family == "normal") {
+    else if (family == "normal") {
       if (is.null(parameter)) {
         mu <- 0
         sigma <- 1
@@ -2782,7 +2794,7 @@ wp.poisson <-
     }
     
     
-    if (family == "Poisson") {
+    else if (family == "Poisson") {
       if (is.null(parameter)) {
         lambda <- 1
       } else {
@@ -2833,7 +2845,7 @@ wp.poisson <-
       
     }
     
-    if (family == "uniform") {
+    else if (family == "uniform") {
       if (is.null(parameter)) {
         L <- 0
         R <- 1
@@ -2886,6 +2898,18 @@ wp.poisson <-
           eval(p.body) - power, c(2 + 1e-10,
                                   1e+07))$root
       }
+    }
+    
+    else {
+      stop(
+        sQuote("family"),
+        " must be one of `Bernoulli`,
+                      `exponential`,
+                      `lognormal`,
+                      `normal`,
+                      `Poisson`,
+                      `uniform`"
+      )
     }
     
     METHOD <- "Power for Poisson regression"
