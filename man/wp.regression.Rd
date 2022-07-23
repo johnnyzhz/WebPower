@@ -33,7 +33,6 @@ Regression provides an F-statistic that can be formulated using the ratio betwee
 The test statistc can also be experessed in terms of caomparison between Full and Reduced models \cite{(Maxwell & Delaney, 2003)}.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 wp.regression(n = 100, p1 = 3, f2 = 0.1, alpha = 0.05, power = NULL)
 #  Power for multiple regression
@@ -99,7 +98,6 @@ res
 #    50  3  0 0.50  0.05 0.9883012
 #
 #  URL: http://psychstat.org/regression
-}
 
 }
 \references{

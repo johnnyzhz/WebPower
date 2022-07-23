@@ -56,7 +56,9 @@ First, the method allows the specification of nonnormal data in the Monte Carlo 
 Second, the function \cite{wp.mc.sem.basic} of a free, open-source R package, WebPower, is developed to ease power anlysis for mediation models using the proposed method.
 }
 \examples{
-\dontrun{
+\donttest{
+set.seed(20220722)
+
 #To calculate power for mediation based on Monte Carlo simulation when Sobel test is used:
 #To specify the model
 demo ="
@@ -72,12 +74,13 @@ mediation = "
 		abc:= a*b + cp
 " 
 #To calculate power for mediation using regular standard errors
-sobel.regular = wp.mc.sem.basic(model=demo, indirect=mediation, nobs=100, nrep=1000,
-       parallel="snow", skewness=c(0, 0, 1.3), kurtosis=c(0,0,10), ovnames=c("x","m","y"))
+## change nrep to at least 1,000 in real data analysis
+sobel.regular = wp.mc.sem.basic(model=demo, indirect=mediation, nobs=100, nrep=10,
+       skewness=c(0, 0, 1.3), kurtosis=c(0,0,10), ovnames=c("x","m","y"))
 
 #To calculate power for mediation using robust standard errors
-sobel.robust = wp.mc.sem.basic(model=demo, indirect=mediation, nobs=100, nrep=1000,
-   parallel="snow", skewness=c(0, 0, 1.3), kurtosis=c(0,0,10), ovnames=c("x","m","y"), se="robust")
+sobel.robust = wp.mc.sem.basic(model=demo, indirect=mediation, nobs=100, nrep=10,
+   skewness=c(0, 0, 1.3), kurtosis=c(0,0,10), ovnames=c("x","m","y"), se="robust")
 
 #To print the power for mediation based on Sobel test using regular standard errors:
 summary(sobel.regular)

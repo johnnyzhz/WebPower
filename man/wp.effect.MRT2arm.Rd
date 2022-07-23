@@ -25,7 +25,6 @@ Details leading to power calculation can be found in \cite{Raudenbush (1997)} an
 This function is used to calculate the effect size with a input data set.
 }
 \examples{
-\donttest{
 #To calculate the effect size based on empirical data
 wp.effect.MRT2arm (MRT2)
 #  Effect size for MRT2arm
@@ -35,8 +34,6 @@ wp.effect.MRT2arm (MRT2)
 #  
 #  NOTE: f is the effect size.
 #  URL: http://psychstat.org/mrt2arm
-}
-
 }
 \references{
 Liu, X. S. (2013). Statistical power analysis for the social and behavioral sciences: basic and advanced techniques. Routledge.

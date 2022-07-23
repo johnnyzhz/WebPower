@@ -61,7 +61,9 @@ Second, the method allows the specification of nonnormal data in the Monte Carlo
 Third, the function \cite{wp.mc.sem.boot} of a free, open-source R package, WebPower, is developed to ease power anlysis for mediation models using the proposed method.
 }
 \examples{
-\dontrun{
+\donttest{
+set.seed(20220722)
+
 #To specify the model
 demo ="
 		y ~ cp*x + start(0)*x + b*m + start(0.39)* m
@@ -76,8 +78,10 @@ mediation = "
 		abc:= a*b + cp
 " 
 #Power for mediation based on MC method when bootstrap method is used to test the effects:
+# change nrep and nboot to at least 1,000 in real analysis
+
 mediation.boot = wp.mc.sem.boot(model=demo, indirect=mediation, nobs=100,
-                               nrep=1000, nboot=2000, parallel="parallel",
+                               nrep=10, nboot=10,
              skewness=c(0, 0, 1.3), kurtosis=c(0,0,10), ovnames=c("x","m","y"))
 
 #To print the power analysis results
@@ -91,14 +95,14 @@ ex1model <- "
 
 indirect <- "ab:=a*b"
 
-boot.normal <- wp.mc.sem.boot(ex1model,indirect, 50, nrep=2000,
-                                nboot=2000, parallel='parallel')
-summmary(boot.normal) 
+# change nrep and nboot to at least 1,000 in real analysis
+boot.normal <- wp.mc.sem.boot(ex1model,indirect, 50, nrep=10, nboot=10)
+summary(boot.normal) 
 
-boot.non.normal <- wp.mc.sem.boot(ex1model,indirect, 100, nrep=2000,
-                   nboot=2000, parallel='parallel', skewness=c(-0.3, -0.7, 1.3),
+boot.non.normal <- wp.mc.sem.boot(ex1model,indirect, 100, nrep=10, nboot=10,
+                              skewness=c(-0.3, -0.7, 1.3),
                               kurtosis=c(1.5, 0, 5), ovnames=c('ME','HE','math'))
-summmary(boot.non.normal) 
+summary(boot.non.normal) 
 
 #Example: Multiple Group Mediation Analysis (Moderated Mediation)
 ex3model <- "
@@ -120,8 +124,9 @@ indirect <- "
 		diffmed := a1*b1 - a2*b2
 "
 
+# change nrep and nboot to at least 1,000 in real analysis
 bootstrap <- wp.mc.sem.boot(ex3model, indirect, nobs=c(400,200),
-                              nrep=2000, nboot=1000, prallel='parallel')
+                              nrep=10, nboot=10)
 summary(bootstrap) 
 
 #Example: A Longitudinal Mediation Model
@@ -145,8 +150,8 @@ y3 ~~ start(.3243)*y3
 
 indirect <- "ab := a*b"
 
-bootstrap <- wp.mc.sem.boot(ex4model, indirect, nobs=50, nrep=1000,
-                             nboot=1000, parallel='parallel', ncore=8)
+# change nrep and nboot to at least 1,000 in real analysis
+bootstrap <- wp.mc.sem.boot(ex4model, indirect, nobs=50, nrep=10, nboot=10)
 summary(bootstrap)
 }
 

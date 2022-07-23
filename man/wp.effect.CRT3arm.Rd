@@ -25,7 +25,6 @@ The Effect size f specifies the main effect of treatment, the mean difference be
 This function is used to calculate the effect size with a input data set.
 }
 \examples{
-\donttest{
 #To calculate the effect sizes based on empirical data
 wp.effect.CRT3arm (CRT3)
 #  Effect size for CRT3arm
@@ -37,7 +36,6 @@ wp.effect.CRT3arm (CRT3)
 #        f2 for difference between two treatments;
 #        f3 for effect size of omnibus test.
 #  URL: http://psychstat.org/crt3arm
-}
 
 }
 \references{

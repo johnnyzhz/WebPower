@@ -31,7 +31,6 @@ The other is based on RMSEA proposed by \cite{MacCallum et al. (1996)}.
 This function is for SEM power analysis based on the likelihood ratio test.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 wp.sem.chisq(n = 100, df = 4, effect = 0.054, power = NULL, alpha = 0.05)
 #    Power for SEM (Satorra & Saris, 1985)
@@ -92,8 +91,6 @@ wp.sem.chisq(n = 100, df = 4, effect = NULL, power = 0.8, alpha = 0.05)
 #      100  4 0.1205597   0.8  0.05
 #  
 #    URL: http://psychstat.org/semchisq
-}
-
 }
 \references{
 Satorra, A., & Saris, W. E. (1985). Power of the likelihood ratio test in covariance structure analysis. Psychometrika, 50(1), 83-90.

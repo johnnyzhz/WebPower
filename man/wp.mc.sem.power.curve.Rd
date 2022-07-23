@@ -55,7 +55,9 @@ A power curve is useful to graphically display how power changes with sample siz
 This function is to generate a power curve for SEM based on Monte Carlo simulation, either using Sobel test or bootstrap method to test the indirect / mediation effects if applicable.
 }
 \examples{
-\dontrun{
+\donttest{
+set.seed(20220722)
+
 #To specify the model
 ex2model ="
 		ept ~ start(0.4)*hvltt + b*hvltt + start(0)*age + start(0)*edu + start(2)*R
@@ -76,8 +78,10 @@ ex2model ="
 indirect = "ind1 := a*b + c*b" 
 nobs <- seq(100, 2000, by =200)
 #To calculate power curve:
+# change nrep and nboot to at least 1,000 in real analysis
 power.curve = wp.mc.sem.power.curve(model=ex2model, indirect=indirect,
-                              nobs=nobs, type='boot', parallel="muticore")
+                              nobs=nobs, type='boot',
+							  nrep=10, nboot=10)
 }
 
 }

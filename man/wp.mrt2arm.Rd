@@ -47,7 +47,6 @@ and (3) The "variance" type tests variance of treatment effects.
 Details leading to power calculation can be found in \cite{Raudenbush (1997)} and \cite{Liu (2013)}.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 #For main effect
 wp.mrt2arm(n = 45, f = 0.5, J = 20, tau11 = 0.5,
@@ -114,8 +113,6 @@ wp.mrt2arm(n = NULL, f = 0.5, J = 20, tau11 = 0.5,
 #
 #  NOTE: n is the number of subjects per cluster
 #  URL: http://psychstat.org/mrt2arm
-}
-
 }
 \references{
 Liu, X. S. (2013). Statistical power analysis for the social and behavioral sciences: basic and advanced techniques. Routledge.

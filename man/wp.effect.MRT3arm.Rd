@@ -27,9 +27,8 @@ Details leading to power calculation can be found in \cite{Raudenbush (1997)} an
 This function is used to calculate the effect size with a input data set.
 }
 \examples{
-\donttest{
 #To calculate the effect size and ICC based on empirical data
-MRT3 <- data('MRT3')
+#  wp.effect.MRT3arm(MRT3)
 #  Effect size for MRT3arm
 #  
 #  f1        f2
@@ -38,7 +37,6 @@ MRT3 <- data('MRT3')
 #  NOTE: f1 for treatment main effect;
 #        f2 for comparing the two treatments.
 #  URL: http://psychstat.org/mrt3arm
-}
 
 }
 \references{

@@ -47,7 +47,6 @@ and (3) The "omnibus" type tests whether the three arms are all equivalent.
 Details leading to power calculation can be found in \cite{Raudenbush (1997)} and \cite{Liu (2013)}.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 #For main effect
 wp.mrt3arm(n = 30, f1 = 0.43, J = 20, tau = 0.4,
@@ -117,7 +116,6 @@ wp.mrt3arm(n = NULL, f1 = 0.43, J = 20, tau = 0.4,
 #  
 #    NOTE: n is the number of subjects per cluster
 #    URL: http://psychstat.org/mrt3arm
-}
 
 }
 \references{

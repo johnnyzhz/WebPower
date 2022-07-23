@@ -23,10 +23,7 @@ The function searches in an interval for a root (i.e., zero) of the function f w
 The argument interval is for the input of x, the corresponding outcome interval will be used as the interval to be searched in.
 }
 \examples{
-\donttest{
 f <- function(x) 1+x-0.5*x^2
 interval <- c(-3,6)
 nuniroot(f,interval)
-}
-
 }

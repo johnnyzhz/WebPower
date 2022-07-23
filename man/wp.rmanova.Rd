@@ -40,7 +40,6 @@ Power analysis for (1) the within-effect test about the mean difference among me
 If the subjects are from more than one group,the power analysis is also available for (2) the between-effect test about mean difference among groups and (3) the interaction effect test of the measurements and groups.
 }
 \examples{
-\donttest{
 #To calculate the statistical power for repeated-measures ANOVA:
 wp.rmanova(n=30, ng=3, nm=4, f=0.36, nscor=0.7)
 #  Repeated-measures ANOVA analysis
@@ -107,8 +106,6 @@ wp.rmanova(n=30, ng=3, nm=4, f=seq(0.1,0.5,0.05), nscor=0.7)
 #
 #  NOTE: Power analysis for between-effect test
 #  URL: http://psychstat.org/rmanova
-}
-
 }
 \references{
 Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd Ed). Hillsdale, NJ: Lawrence Erlbaum Associates.

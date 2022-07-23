@@ -34,7 +34,6 @@ This function is for designs with 2 arms (i.e., a treatment and a control).
 Details leading to power calculation can be found in \cite{Raudenbush (1997)} and \cite{Liu (2013)}.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 wp.crt2arm(f = 0.6, n = 20, J = 10, icc = 0.1, alpha = 0.05, power = NULL)
 #  Cluster randomized trials with 2 arms
@@ -78,7 +77,6 @@ wp.crt2arm(f = 0.8, n = NULL, J = 10,
 #
 #  NOTE: n is the number of subjects per cluster.
 #  URL: http://psychstat.org/crt2arm
-}
 
 }
 \references{

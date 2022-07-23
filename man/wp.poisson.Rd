@@ -7,7 +7,8 @@
 wp.poisson(n = NULL, exp0 = NULL, exp1 = NULL, alpha = 0.05,
   power = NULL, alternative = c("two.sided", "less", "greater"),
   family = c("Bernoulli", "exponential", "lognormal", "normal", "Poisson",
-  "uniform"), parameter = NULL)
+  "uniform"), parameter = NULL, subdivisions=200L,
+  i.method=c("numerical", "MC"), mc.iter=20000)
 }
 \arguments{
 \item{n}{Sample size.}
@@ -27,6 +28,9 @@ wp.poisson(n = NULL, exp0 = NULL, exp1 = NULL, alpha = 0.05,
 
 \item{parameter}{Corresponding parameter for the predictor's distribution.
 The default is 0.5 for "Bernoulli", 1 for "exponential", (0,1) for "lognormal" or "normal", 1 for "Poisson", and (0,1) for "uniform".}
+\item{subdivisions}{Number of divisions for integration}
+\item{i.method}{Integration method}
+\item{mc.iter}{Number of iterations for Monte Carlo integration}
 }
 \value{
 An object of the power analysis.

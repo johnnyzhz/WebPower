@@ -33,7 +33,6 @@ The other is based on RMSEA proposed by \cite{MacCallum et al. (1996)}.
 This function is for SEM power analysis based on RMSEA.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 wp.sem.rmsea (n = 100, df = 4, rmsea0 = 0,
                rmsea1 = 0.116,  power = NULL, alpha = 0.05)
@@ -82,8 +81,6 @@ wp.sem.rmsea (n = 100, df = 4, rmsea0 = 0,
 #      100  4      0 0.1736082   0.8  0.05
 #  
 #    URL: http://psychstat.org/rmsea
-}
-
 }
 \references{
 MacCallum, R. C., Browne, M. W., & Sugawara, H. M. (1996). Power analysis and determination of sample size for covariance structure modeling. Psychological methods, 1(2), 130.

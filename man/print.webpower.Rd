@@ -20,9 +20,7 @@ The printing of the input object of power analysis.
 This function is used to summary the power analysis results.
 }
 \examples{
-\donttest{
 res <- wp.correlation(n=50,r=0.3, alternative="two.sided")
 print(res)
-}
 
 }

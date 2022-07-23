@@ -51,6 +51,7 @@ alternative hypothesis
 }
 \examples{
 \donttest{
+set.seed(20220722)
 ########## Chapter 16. Monte Carlo t-test #############
 wp.mc.t(n=20 , mu0=0, mu1=0.5, sd=1, skewness=0, 
 kurtosis=3, type = c("one.sample"), alternative = c("two.sided"))

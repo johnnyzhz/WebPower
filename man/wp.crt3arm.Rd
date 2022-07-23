@@ -42,7 +42,6 @@ This function is for designs with 3 arms (i.e., two treatments and a control).
 Details leading to power calculation can be found in \cite{Raudenbush (1997)} and \cite{Liu (2013)}.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 wp.crt3arm(f = 0.5, n = 20, J = 10, icc = 0.1, alpha = 0.05, power = NULL)
 #  Cluster randomized trials with 3 arms
@@ -85,8 +84,6 @@ wp.crt3arm(f = 0.8, n = NULL, J = 10, icc = 0.1, alpha = 0.05, power = 0.8)
 #
 #  NOTE: n is the number of subjects per cluster.
 #  URL: http://psychstat.org/crt3arm
-}
-
 }
 \references{
 Liu, X. S. (2013). Statistical power analysis for the social and behavioral sciences: basic and advanced techniques. Routledge.

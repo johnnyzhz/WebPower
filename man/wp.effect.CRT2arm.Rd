@@ -24,7 +24,6 @@ The Effect size f specifies the main effect of treatment, the mean difference be
 This function is used to calculate the effect size with a input data set.
 }
 \examples{
-\donttest{
 #Empirical data set CRT2:
 CRT2
 #ID cluster score group
@@ -46,7 +45,6 @@ wp.effect.CRT2arm (CRT2)
 #  
 #  NOTE: f is the effect size.
 #  URL: http://psychstat.org/crt2arm
-}
 
 }
 \references{

@@ -37,7 +37,6 @@ and \cite{b} is the path coefficent from the mediator m to the outcome variable 
 Sobel test statistic \cite{(Sobel, 1982)} is used to test whether the mediation effect is significantly different from zero.
 }
 \examples{
-\donttest{
 #To calculate the statistical power given sample size and effect size:
 wp.mediation(n = 100, power = NULL, a = 0.5, b = 0.5,
                   varx = 1, vary = 1, varm = 1, alpha = 0.05)
@@ -91,7 +90,6 @@ wp.mediation(n = 100, power = 0.9, a = NULL, b = 0.5,
 #      100   0.9 0.7335197 0.5    1    1    1  0.05
 #  
 #    URL: http://psychstat.org/mediation
-}
 
 }
 \references{

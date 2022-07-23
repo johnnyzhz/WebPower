@@ -1683,332 +1683,345 @@ wp.correlation <- function(n = NULL, r = NULL, power = NULL, p = 0, rho0 = 0,
         method = METHOD, url = URL), class = "webpower")
 }
 
-wp.poisson <- function(n = NULL, exp0 = NULL, exp1 = NULL, alpha = 0.05, 
-    power = NULL, alternative = c("two.sided", "less", "greater"), family = c("Bernoulli", 
-        "exponential", "lognormal", "normal", "Poisson", "uniform"), parameter = NULL) {
-		sig.level <- alpha
-    if (sum(sapply(list(n, power), is.null)) != 1) 
-        stop("exactly one of n, power, andalpha must be NULL")
-    
-    if (is.null(exp0) || !is.null(exp0) && !is.numeric(exp0) || exp0 <= 
-        0) 
-        stop(sQuote("exp0"), " must be numeric in (0,Infinity)")
-    
-    if (is.null(exp1) || !is.null(exp1) && !is.numeric(exp1) || exp1 <= 
-        0) 
-        stop(sQuote("exp1"), " must be numeric in (0,Infinity)")
-    
-    if (!is.null(n) && min(n) < 5) 
-        stop("number of observations must be at least 5")
-    if (is.null(alpha) || !is.null(alpha) & !is.numeric(alpha) || any(alpha < 
-        0 | alpha > 1)) 
-        stop(sQuote("alpha"), " must be numeric in [0, 1]")
-    if (!is.null(power) & !is.numeric(power) || any(0 > power | power > 
-        1)) 
-        stop(sQuote("power"), " must be numeric in [0, 1]")
-    
-    
-    alternative <- match.arg(alternative)
-    tside <- switch(alternative, less = 1, two.sided = 2, greater = 3)
-    
-    
-    p.body <- quote({
-        s * pnorm(-qnorm(1 - alpha) - sqrt(n)/sqrt(v1) * beta1) + t * pnorm(-qnorm(1 - 
-            alpha) + sqrt(n)/sqrt(v1) * beta1)
-    })
-    
-    
-    if (family == "Bernoulli") {
-        # bernoulli
-        
-        
-        if (is.null(parameter)) {
-            B <- 0.5
-        } else {
-            B <- parameter
-        }
-        
-        
-        beta1 <- log(exp1)  ##beta1 under H_A in the population 
-        beta0 <- log(exp0)
-        a <- (1 - B) * exp(beta0) + B * exp(beta0 + beta1)  ##00
-        b <- B * exp(beta0 + beta1)  #10
-        c <- B * exp(beta0 + beta1)  #11
-        v1 <- a/(a * c - b^2)
-        
-        if (tside == 1) {
-            s <- 1
-            t <- 0
-            alpha <- alpha
-        }
-        if (tside == 2) {
-            s <- 1
-            t <- 1
-            alpha <- alpha/2
-        }
-        if (tside == 3) {
-            s <- 0
-            t <- 1
-            alpha <- alpha
-        }
-        if (is.null(power)) {
-            power <- eval(p.body)
-        }
-        if (is.null(n)) {
-            n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 
-                1e+07))$root
-        }
+wp.poisson <- function(n = NULL, exp0 = NULL, exp1 = NULL, alpha = 0.05, power = NULL,
+                        alternative = c("two.sided", "less", "greater"),
+                        family = c("Bernoulli", "exponential", "lognormal",
+                                   "normal", "Poisson", "uniform"), 
+                        parameter = NULL, subdivisions=200L,
+                       i.method=c("numerical", "MC"), mc.iter=20000)
+{
+  sig.level <- alpha
+  if(sum(sapply(list(n, power), is.null)) != 1)
+     stop("exactly one of n, power, andalpha must be NULL")
+  if(is.null(exp0) || !is.null(exp0) && !is.numeric(exp0) ||
+      exp0 <= 0)
+    stop(sQuote("exp0"), " must be numeric in (0,Infinity)")
+  if(is.null(exp1) || !is.null(exp1) && !is.numeric(exp1) ||
+      exp1 <= 0)
+    stop(sQuote("exp1"), " must be numeric in (0,Infinity)")
+  if(!is.null(n) && min(n) < 5)
+    stop("number of observations must be at least 5")
+  if(is.null(alpha) || !is.null(alpha) & !is.numeric(alpha) ||
+      any(alpha < 0 | alpha > 1))
+    stop(sQuote("alpha"), " must be numeric in [0, 1]")
+  if(!is.null(power) & !is.numeric(power) || any(0 > power |
+                                                  power > 1))
+    stop(sQuote("power"), " must be numeric in [0, 1]")
+  alternative <- match.arg(alternative)
+  tside <- switch(alternative, less = 1, two.sided = 2, greater = 3)
+  p.body <- quote({
+    s * pnorm(-qnorm(1 - alpha) - sqrt(n)/sqrt(v1) * beta1) +
+      t * pnorm(-qnorm(1 - alpha) + sqrt(n)/sqrt(v1) *
+                  beta1)
+  })
+  if (family == "Bernoulli") {
+    if (is.null(parameter)) {
+      B <- 0.5
     }
-    
-    if (family == "exponential") {
-        ## exponential predictor
-        if (is.null(parameter)) {
-            lambda <- 1
-        } else {
-            lambda <- parameter
-        }
-        
-        beta1 <- log(exp1)  ##beta1 under H_A in the population 
-        beta0 <- log(exp0)
-        d <- integrate(function(x) exp(beta0 + (beta1 - lambda) * x) * 
-            lambda, 0, Inf, subdivisions = 100L)$value  ##00
-        e <- integrate(function(x) x * exp(beta0 + (beta1 - lambda) * x) * 
-            lambda, 0, Inf, subdivisions = 100L)$value  #01
-        f <- integrate(function(x) x^2 * exp(beta0 + (beta1 - lambda) * 
-            x) * lambda, 0, Inf, subdivisions = 100L)$value  #11
-        
-        v1 <- d/(d * f - e^2)
-        
-        if (tside == 1) {
-            s <- 1
-            t <- 0
-            alpha <- alpha
-        }
-        if (tside == 2) {
-            s <- 1
-            t <- 1
-            alpha <- alpha/2
-        }
-        if (tside == 3) {
-            s <- 0
-            t <- 1
-            alpha <- alpha
-        }
-        
-        if (is.null(power)) {
-            power <- eval(p.body)
-        }
-        if (is.null(n)) {
-            n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 
-                1e+07))$root
-        }
-        
+    else {
+      B <- parameter
     }
-    
-    if (family == "lognormal") {
-        if (is.null(parameter)) {
-            mu <- 0
-            sigma <- 1
-        } else {
-            if (length(parameter) != 2) 
-                stop("Both mean and standard deviation of the log-normal distribution have to be provided as a vector.")
-            mu <- parameter[1]
-            sigma <- parameter[2]
-        }
-        
-        beta1 <- log(exp1)  ##beta1 under H_A in the population 
-        beta0 <- log(exp0)
-        d <- integrate(function(x) exp(beta0 + beta1 * x) * dlnorm(x, mu, 
-            sigma), 0, Inf, subdivisions = 100L)$value
-        e <- integrate(function(x) x * exp(beta0 + beta1 * x) * dlnorm(x, 
-            mu, sigma), 0, Inf, subdivisions = 100L)$value
-        f <- integrate(function(x) x^2 * exp(beta0 + beta1 * x) * dlnorm(x, 
-            mu, sigma), 0, Inf, subdivisions = 100L)$value
-        v1 <- d/(d * f - e^2)
-        
-        
-        if (tside == 1) {
-            s <- 1
-            t <- 0
-            alpha <- alpha
-        }
-        if (tside == 2) {
-            s <- 1
-            t <- 1
-            alpha <- alpha/2
-        }
-        if (tside == 3) {
-            s <- 0
-            t <- 1
-            alpha <- alpha
-        }
-        
-        if (is.null(power)) {
-            power <- eval(p.body)
-        }
-        if (is.null(n)) {
-            n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 
-                1e+07))$root
-        }
-        
-        
+    beta1 <- log(exp1)
+    beta0 <- log(exp0)
+    a <- (1 - B) * exp(beta0) + B * exp(beta0 + beta1)
+    b <- B * exp(beta0 + beta1)
+    c <- B * exp(beta0 + beta1)
+    v1 <- a/(a * c - b^2)
+    if (tside == 1) {
+      s <- 1
+      t <- 0
+      alpha <- alpha
     }
-    
-    
-    
-    if (family == "normal") {
-        
-        if (is.null(parameter)) {
-            mu <- 0
-            sigma <- 1
-        } else {
-            if (length(parameter) != 2) 
-                stop("Both mean and standard deviation of the normal distribution have to be provided as a vector.")
-            mu <- parameter[1]
-            sigma <- parameter[2]
-        }
-        
-        
-        beta1 <- log(exp1)  ##beta1 under H_A in the population 
-        beta0 <- log(exp0)
-        
-        d <- integrate(function(x) exp(beta0 + beta1 * x) * dnorm(x, mu, 
-            sigma), -Inf, Inf, subdivisions = 100L)$value
-        e <- integrate(function(x) x * exp(beta0 + beta1 * x) * dnorm(x, 
-            mu, sigma), -Inf, Inf, subdivisions = 100L)$value
-        f <- integrate(function(x) x^2 * exp(beta0 + beta1 * x) * dnorm(x, 
-            mu, sigma), -Inf, Inf, subdivisions = 100L)$value
-        v1 <- d/(d * f - e^2)
-        
-        
-        if (tside == 1) {
-            s <- 1
-            t <- 0
-            alpha <- alpha
-        }
-        if (tside == 2) {
-            s <- 1
-            t <- 1
-            alpha <- alpha/2
-        }
-        if (tside == 3) {
-            s <- 0
-            t <- 1
-            alpha <- alpha
-        }
-        
-        if (is.null(power)) {
-            power <- eval(p.body)
-        }
-        if (is.null(n)) {
-            n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 
-                1e+07))$root
-        }
-        
+    if (tside == 2) {
+      s <- 1
+      t <- 1
+      alpha <- alpha/2
     }
-    
-    
-    if (family == "Poisson") {
-        
-        if (is.null(parameter)) {
-            lambda <- 1
-        } else {
-            lambda <- parameter
-        }
-        
-        beta1 <- log(exp1)  ##beta1 under H_A in the population 
-        beta0 <- log(exp0)
-        
-        d <- sum(sapply(0:1e+05, function(x) exp(beta0 + beta1 * x) * dpois(x, 
-            lambda)))
-        e <- sum(sapply(0:1e+05, function(x) x * exp(beta0 + beta1 * x) * 
-            dpois(x, lambda)))
-        f <- sum(sapply(0:1e+05, function(x) x^2 * exp(beta0 + beta1 * 
-            x) * dpois(x, lambda)))
-        v1 <- d/(d * f - e^2)
-        
-        
-        if (tside == 1) {
-            s <- 1
-            t <- 0
-            alpha <- alpha
-        }
-        if (tside == 2) {
-            s <- 1
-            t <- 1
-            alpha <- alpha/2
-        }
-        if (tside == 3) {
-            s <- 0
-            t <- 1
-            alpha <- alpha
-        }
-        
-        if (is.null(power)) {
-            power <- eval(p.body)
-        }
-        if (is.null(n)) {
-            n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 
-                1e+07))$root
-        }
-        
+    if (tside == 3) {
+      s <- 0
+      t <- 1
+      alpha <- alpha
     }
-    
-    if (family == "uniform") {
-        if (is.null(parameter)) {
-            L <- 0
-            R <- 1
-        } else {
-            if (length(parameter) != 2) 
-                stop("The lower and upper bounds have to be provided as a vector")
-            L <- parameter[1]
-            R <- parameter[2]
-        }
-        
-        beta1 <- log(exp1)  ##beta1 under H_A in the population 
-        beta0 <- log(exp0)
-        
-        
-        d <- integrate(function(x) exp(beta0 + beta1 * x)/(R - L), L, R, 
-            subdivisions = 100L)$value
-        e <- integrate(function(x) x * exp(beta0 + beta1 * x)/(R - L), 
-            L, R, subdivisions = 100L)$value
-        f <- integrate(function(x) x^2 * exp(beta0 + beta1 * x)/(R - L), 
-            L, R, subdivisions = 100L)$value
-        v1 <- d/(d * f - e^2)
-        
-        if (tside == 1) {
-            s <- 1
-            t <- 0
-            alpha <- alpha
-        }
-        if (tside == 2) {
-            s <- 1
-            t <- 1
-            alpha <- alpha/2
-        }
-        if (tside == 3) {
-            s <- 0
-            t <- 1
-            alpha <- alpha
-        }
-        if (is.null(power)) {
-            power <- eval(p.body)
-        }
-        if (is.null(n)) {
-            n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 
-                1e+07))$root
-        }
+    if (is.null(power)) {
+      power <- eval(p.body)
     }
+    if (is.null(n)) {
+      n <- uniroot(function(n) eval(p.body) - power, c(2 +
+                                                         1e-10, 1e+07))$root
+    }
+  }
+  if (family == "exponential") {
+    if (is.null(parameter)) {
+      lambda <- 1
+    }
+    else {
+      lambda <- parameter
+    }
+    beta1 <- log(exp1); beta0 <- log(exp0)
     
-    METHOD <- "Power for Poisson regression"
-    URL <- "http://psychstat.org/poisson"
-    structure(list(n = n, power = power, alpha = sig.level, exp0 = exp0, exp1 = exp1, beta0 = beta0, beta1 = beta1, 
-        alternative = alternative, 
-        family = family, paremeter = parameter, method = METHOD, 
-        url = URL), class = "webpower")
+    if (i.method[1] == "MC"){
+      x.s=rexp(mc.iter,lambda)
+      d=mean(exp0*exp(log(exp1)*x.s))
+      e=mean(x.s*exp0*exp(log(exp1)*x.s))
+      f=mean(x.s^2*exp0*exp(log(exp1)*x.s)) 
+    }else{
+      d.integ<-function(x,beta0,beta1,lamba){#beta1!=lambda
+        
+        lambda*exp(beta0)/(beta1-lambda)*exp((beta1-lambda)*x)
+        
+      }
+      
+      e.integ<-function(x,beta0,beta1,lambda){
+        
+        lambda*exp(beta0)/(beta1-lambda)*x*exp((beta1-lambda)*x) -1/(beta1-lambda)*d.integ(x,beta0,beta1,lambda)
+        
+      }
+      
+      f.integ<-function(x,beta0,beta1,lambda){
+        
+        x^2*d.integ(x,beta0,beta1,lambda)-2/(beta1-lambda)*e.integ(x,beta0,beta1,lambda)
+        
+      }
+      
+      
+      
+      if(beta1<lambda){
+        
+        d=d.integ(100/(lambda-beta1),beta0,beta1,lambda)-d.integ(0,beta0,beta1,lambda)
+        
+        e=e.integ(100/(lambda-beta1),beta0,beta1,lambda)-e.integ(0,beta0,beta1,lambda)
+        
+        f=f.integ(100/(lambda-beta1), beta0,beta1,lambda)-f.integ(0,beta0,beta1,lambda)
+        
+        v1=d/(d*f-e^2)}
+      
+      if(beta1>lambda){
+        
+        d=d.integ(100/abs(lambda-beta1),beta0,beta1,lambda)-d.integ(0,beta0,beta1,lambda)
+        
+        e=e.integ(100/abs(lambda-beta1),beta0,beta1,lambda)-e.integ(0,beta0,beta1,lambda)
+        
+        f=f.integ(100/abs(lambda-beta1), beta0,beta1, lambda)-f.integ(0,beta0,beta1,lambda)
+        
+        v1=d/(d*f-e^2)
+        
+      }else{
+        
+        v1=0.00001#the actual value is 0
+        
+      }
+    }
+   
+    v1 <- d/(d * f - e^2)
+    if (tside == 1) {
+      s <- 1
+      t <- 0
+      alpha <- alpha
+    }
+    if (tside == 2) {
+      s <- 1
+      t <- 1
+      alpha <- alpha/2
+    }
+    if (tside == 3) {
+      s <- 0
+      t <- 1
+      alpha <- alpha
+    }
+    if (is.null(power)) {
+      power <- eval(p.body)
+    }
+    if (is.null(n)) {
+      n <- uniroot(function(n) eval(p.body) - power, c(2 +
+                                                         1e-10, 1e+07))$root
+    }
+  }
+  if (family == "lognormal") {
+    if (is.null(parameter)) {
+      mu <- 0
+      sigma <- 1
+    }
+    else {
+      if (length(parameter) != 2)
+        stop("Both mean and standard deviation of the log-normal distribution have to be provided as a vector.")
+      mu <- parameter[1]
+      sigma <- parameter[2]
+    }
+    beta1 <- log(exp1)
+    beta0 <- log(exp0)
     
+    if (i.method[1] == "MC"){
+      x.s=rlnorm(mc.iter,mu,sigma)
+      d=mean(exp0*exp(log(exp1)*x.s))
+      e=mean(x.s*exp0*exp(log(exp1)*x.s))
+      f=mean(x.s^2*exp0*exp(log(exp1)*x.s))
+    }else{
+      d <- integrate(function(x) exp(beta0 + beta1 * x) * dlnorm(x, mu, sigma), 0, Inf, subdivisions = subdivisions)$value
+      e <- integrate(function(x) x * exp(beta0 + beta1 * x) * dlnorm(x, mu, sigma), 0, Inf, subdivisions = subdivisions)$value
+      f <- integrate(function(x) x^2 * exp(beta0 + beta1 * x) * dlnorm(x, mu, sigma), 0, Inf, subdivisions = subdivisions)$value
+    }
+   
+   
+     v1 <- d/(d * f - e^2)
+    if (tside == 1) {
+      s <- 1
+      t <- 0
+      alpha <- alpha
+    }
+    if (tside == 2) {
+      s <- 1
+      t <- 1
+      alpha <- alpha/2
+    }
+    if (tside == 3) {
+      s <- 0
+      t <- 1
+      alpha <- alpha
+    }
+    if (is.null(power)) {
+      power <- eval(p.body)
+    }
+    if (is.null(n)) {
+      n <- uniroot(function(n) eval(p.body) - power, c(2 +
+                                                         1e-10, 1e+07))$root
+    }
+  }
+  if (family == "normal") {
+    if (is.null(parameter)) {
+      mu <- 0
+      sigma <- 1
+    }
+    else {
+      if (length(parameter) != 2)
+        stop("Both mean and standard deviation of the normal distribution have to be provided as a vector.")
+      mu <- parameter[1]
+      sigma <- parameter[2]
+    }
+    beta1 <- log(exp1)
+    beta0 <- log(exp0)
+    
+    
+      d=exp0*exp(beta1^2*sigma^2/2+beta1*mu)
+      
+      e=exp0*exp(beta1^2*sigma^2/2+beta1*mu)*(mu+beta1*sigma^2)
+      
+      f=exp0*exp(beta1^2*sigma^2/2+beta1*mu)*((mu+beta1*sigma^2)^2+sigma^2)
+    
+    
+    v1 <- d/(d * f - e^2)
+    if (tside == 1) {
+      s <- 1
+      t <- 0
+      alpha <- alpha
+    }
+    if (tside == 2) {
+      s <- 1
+      t <- 1
+      alpha <- alpha/2
+    }
+    if (tside == 3) {
+      s <- 0
+      t <- 1
+      alpha <- alpha
+    }
+    if (is.null(power)) {
+      power <- eval(p.body)
+    }
+    if (is.null(n)) {
+      n <- uniroot(function(n) eval(p.body) - power, c(2 +
+                                                         1e-10, 1e+07))$root
+    }
+  }
+  if (family == "Poisson") {
+    if (is.null(parameter)) {
+      lambda <- 1
+    }
+    else {
+      lambda <- parameter
+    }
+    beta1 <- log(exp1)
+    beta0 <- log(exp0)
+    d <- sum(sapply(0:1e+05, function(x) exp(beta0 + beta1 *
+                                               x) * dpois(x, lambda)))
+    e <- sum(sapply(0:1e+05, function(x) x * exp(beta0 +
+                                                   beta1 * x) * dpois(x, lambda)))
+    f <- sum(sapply(0:1e+05, function(x) x^2 * exp(beta0 +
+                                                     beta1 * x) * dpois(x, lambda)))
+    v1 <- d/(d * f - e^2)
+    if (tside == 1) {
+      s <- 1
+      t <- 0
+      alpha <- alpha
+    }
+    if (tside == 2) {
+      s <- 1
+      t <- 1
+      alpha <- alpha/2
+    }
+    if (tside == 3) {
+      s <- 0
+      t <- 1
+      alpha <- alpha
+    }
+    if (is.null(power)) {
+      power <- eval(p.body)
+    }
+    if (is.null(n)) {
+      n <- uniroot(function(n) eval(p.body) - power, c(2 +
+                                                         1e-10, 1e+07))$root
+    }
+  }
+  if (family == "uniform") {
+    if (is.null(parameter)) {
+      L <- 0
+      R <- 1
+    }
+    else {
+      if (length(parameter) != 2)
+        stop("The lower and upper bounds have to be provided as a vector")
+      L <- parameter[1]
+      R <- parameter[2]
+    }
+    beta1 <- log(exp1)
+    beta0 <- log(exp0)
+    d <- integrate(function(x) exp(beta0 + beta1 * x)/(R -
+                                                         L), L, R, subdivisions = subdivisions)$value
+    e <- integrate(function(x) x * exp(beta0 + beta1 * x)/(R -
+                                                             L), L, R, subdivisions = subdivisions)$value
+    f <- integrate(function(x) x^2 * exp(beta0 + beta1 *
+                                           x)/(R - L), L, R, subdivisions = subdivisions)$value
+    v1 <- d/(d * f - e^2)
+    if (tside == 1) {
+      s <- 1
+      t <- 0
+      alpha <- alpha
+    }
+    if (tside == 2) {
+      s <- 1
+      t <- 1
+      alpha <- alpha/2
+    }
+    if (tside == 3) {
+      s <- 0
+      t <- 1
+      alpha <- alpha
+    }
+    if (is.null(power)) {
+      power <- eval(p.body)
+    }
+    if (is.null(n)) {
+      n <- uniroot(function(n) eval(p.body) - power, c(2 +
+                                                         1e-10, 1e+07))$root
+    }
+  }
+  METHOD <- "Power for Poisson regression"
+  URL <- "http://psychstat.org/poisson"
+  structure(list(n = n, power = power, alpha = sig.level, exp0 = exp0,
+                exp1 = exp1, beta0 = beta0, beta1 = beta1, alternative = alternative,
+                family = family, method = METHOD,
+                url = URL), class = "webpower")
 }
+
 
 wp.sem.chisq <- 
 function (n = NULL, df = NULL, effect = NULL, power = NULL, alpha = 0.05) 
@@ -3205,7 +3218,7 @@ wp.mc.sem.basic<-function(model, indirect=NULL, nobs=100, nrep=1000, alpha=.95, 
 		
 		## Step 3: Check significance
 		
-		if (class(temp.res)!="try-error"){
+		if (!inherits(temp.res, "try-error")){
 		idx <- 1:length( temp.res@ParTable$lhs )
 		temp.est<-temp.res@Fit@est[idx]
 		temp.se<-temp.res@Fit@se[idx]
@@ -3279,7 +3292,7 @@ wp.mc.sem.boot<-function(model, indirect=NULL, nobs=100, nrep=1000, nboot=1000, 
 	
 	## internal function
 	coef.new<-function(x,...){
-		coef(x, type='user', ...)
+		lavaan::coef(x, type='user', ...)
 	}
 	model.indirect<-paste(model, "\n", indirect, "\n")
 	ngroups <- length(nobs)
@@ -3353,9 +3366,9 @@ wp.mc.sem.boot<-function(model, indirect=NULL, nobs=100, nrep=1000, nboot=1000, 
 		
 		
 		## Step 3: Conduct bootstrap analysis
-		if (class(temp.res)!="try-error"){
+		if (!inherits(temp.res, "try-error")){
 		orig.res<-coef.new(temp.res)
-		boot.res<-bootstrapLavaan(temp.res, FUN=coef.new, R=nboot, parallel="no", warn=FALSE, ...)
+		boot.res<-bootstrapLavaan(temp.res, FUN=coef.new, R=nboot, ...)
 		ci.res<-ci.bc(boot.res, orig.res, cl=alpha)
 		## Step 4: Check the coverage		
 		 
@@ -3721,4 +3734,33 @@ wp.mc.t <- function(n = NULL, R0 = 1e+5, R1=1e+3, mu0 = 0, mu1 = 0, sd = 1,
             alternative = alternative, note = NOTE, method = METHOD, url=URL), class = "webpower")
     }
 } 
- 
+
+
+wp.mc.chisq.diff <- function(full.model.pop, full.model, reduced.model, N=100, R=1000, alpha=0.05){
+  
+  chi.diff <- rep(0, R)
+
+  for (i in 1:R){
+    sim.data <- simulateData(full.model.pop, sample.nobs=N)
+    full.res <- sem(full.model, data=sim.data)
+    reduced.res <- sem(reduced.model, data=sim.data)
+  
+    chi.diff[i] <- reduced.res@Fit@test[[1]]$stat - full.res@Fit@test[[1]]$stat
+  }
+  df <- reduced.res@Fit@test[[1]]$df - full.res@Fit@test[[1]]$df
+  power <- mean(chi.diff > qchisq(1-alpha, df))
+  list(power=power, df=df, chi.dff=chi.diff)
+  
+  structure(list(n = N, power = power, df=df, chi.dff=chi.diff, alpha = alpha), class = "webpower")
+}
+
+sem.effect.size <- function(full.model.pop, reduced.model){
+  N <- 1000
+  full.res<-sem(full.model.pop, do.fit=FALSE)
+  sigma.F<-fitted.values(full.res)$cov
+  reduced.res<-sem(reduced.model, sample.cov=sigma.F, sample.nobs=N)
+  delta <- reduced.res@Fit@test[[1]]$stat/N 
+  df <- reduced.res@Fit@test[[1]]$df
+  RMSEA <- fitMeasures(reduced.res, "rmsea")
+  list(delta=delta, df=df, RMSEA=RMSEA)
+}
