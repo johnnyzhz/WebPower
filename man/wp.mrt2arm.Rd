@@ -71,12 +71,12 @@ wp.mrt2arm(n = 45, f = 0.5, J = 20, tau11 = 0.5,
 #  URL: http://psychstat.org/mrt2arm
 
 #For testing site variablity
-res<- wp.mrt2arm(n = 45, f = 0.5, J = 20, tau11 = 0.5,
+res<- wp.mrt2arm(n = 45, J = 20, tau00 = 0.5,
                  sg2 = 1.25, alpha = 0.05, power = NULL, type = "site")
 #  Power analysis for Multileve model Multisite randomized trials with 2 arms
 #
-#     J  n   f tau11  sg2 alpha
-#    20 45 0.5   0.5 1.25  0.05
+#     J  n tau00  sg2     power alpha
+#    20 45   0.5 1.25 0.9999999  0.05
 #
 #  NOTE: n is the number of subjects per cluster
 #  URL: http://psychstat.org/mrt2arm
