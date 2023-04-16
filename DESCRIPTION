@@ -11,8 +11,9 @@ Author: Zhiyong Zhang [aut, cre],
   Yujiao Mai [aut],
   Miao Yang [ctb]
 Maintainer: Zhiyong Zhang <johnnyzhz@gmail.com>
-Depends: R (>= 3.2.5), MASS, stats, grDevices, graphics, lme4, lavaan,
-        parallel, PearsonDS, dplyr
+Depends: R (>= 3.2.5), MASS, grDevices, graphics, lme4, lavaan,
+        parallel, PearsonDS
+Imports: dplyr, stats
 License: GPL (>= 3)
 Description: This is a collection of tools for conducting both basic and advanced statistical power analysis including correlation, proportion, t-test, one-way ANOVA, two-way ANOVA, linear regression, logistic regression, Poisson regression, mediation analysis, longitudinal data analysis, structural equation modeling and multilevel modeling. It also serves as the engine for conducting power analysis online at <https://webpower.psychstat.org>.
 URL: https://webpower.psychstat.org

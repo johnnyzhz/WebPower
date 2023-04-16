@@ -38,7 +38,7 @@ wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 
                    b3 = 0.5, sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
                    n = 500, nrep = 1000, alpha = 0.05, b=1000, nb = n,
                    w_value = 0, method = "value", ncore=5,
-                   pop.cov = NULL, mu = NULL)
+                   pop.cov = NULL, mu = NULL, varnames =  c('x', 'w', 'm', 'xw', 'mw', 'y'))
 {
   if (is.null(pop.cov) || is.null(mu)){
     sigx_m = b1*sigx2 + a1*sigx_w

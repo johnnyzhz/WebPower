@@ -26,7 +26,8 @@ wp.modmed.m58(
   method = "value",
   ncore = 5,
   pop.cov = NULL,
-  mu = NULL
+  mu = NULL,
+  varnames =  c('x', 'w', 'm', 'xw', 'mw', 'y')
 )
 }
 \arguments{
