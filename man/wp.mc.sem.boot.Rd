@@ -151,7 +151,8 @@ y3 ~~ start(.3243)*y3
 indirect <- "ab := a*b"
 
 # change nrep and nboot to at least 1,000 in real analysis
-bootstrap <- wp.mc.sem.boot(ex4model, indirect, nobs=50, nrep=10, nboot=10)
+set.seed(10)
+bootstrap <- wp.mc.sem.boot(ex4model, indirect, nobs=500, nrep=10, nboot=10)
 summary(bootstrap)
 }
 

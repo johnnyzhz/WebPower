@@ -390,8 +390,8 @@ wp.t2 <- function(n1 = NULL, n2 = NULL, d = NULL, alpha = 0.05, power = NULL,
     if (ttside == 1) {
         p.body <- quote({
             nu <- n1 + n2 - 2
-            pt(qt(alpha/tside, nu, lower = FALSE), nu, ncp = d * (1/sqrt(1/n1 + 
-                1/n2)), lower = FALSE)
+            pt(qt(alpha/tside, nu, lower = TRUE), nu, ncp = d * (1/sqrt(1/n1 + 
+                1/n2)), lower = TRUE)
         })
     }
     if (ttside == 2) {
@@ -490,10 +490,10 @@ wp.rmanova <- function(n = NULL, ng = NULL, nm = NULL, f = NULL, nscor = 1,
         power <- eval(p.body) else if (is.null(n)) {
         n <- uniroot(function(n) eval(p.body) - power, c(5 + ng, 1e+07))$root
     } else if (is.null(ng)) {
-        ndf <- uniroot(function(ng) eval(p.body) - power, c(1 + 1e-10, 
+        ng <- uniroot(function(ng) eval(p.body) - power, c(1 + 1e-10, 
             1e+05))$root
     } else if (is.null(nm)) {
-        ng <- uniroot(function(nm) eval(p.body) - power, c(1e-07, 1e+07))$root
+        nm <- uniroot(function(nm) eval(p.body) - power, c(1e-07, 1e+07))$root
     } else if (is.null(f)) {
         f <- uniroot(function(f) eval(p.body) - power, c(1e-07, 1e+07))$root
     } else if (is.null(alpha)) {
@@ -867,9 +867,9 @@ wp.mrt2arm <- function(n = NULL, f = NULL, J = NULL, tau00 = NULL, tau11 = NULL,
         "one.sided"), type = c("main", "site", "variance"), interval = NULL) {
     type <- type[1]
     side <- alternative[1]
-    if (sum(sapply(list(f, n, J, power), is.null)) != 1 & type == 1) 
+    if (sum(sapply(list(f, n, J, power), is.null)) != 1 & type == "main") 
         stop("exactly one of f, J, n and power must be NULL")
-    if (sum(sapply(list(n, J, power), is.null)) != 1 & type != 1) 
+    if (sum(sapply(list(n, J, power), is.null)) != 1 & type != "main") 
         stop("exactly one of J, n and power must be NULL")
     if (!is.null(f) && min(f) < 0) 
         stop("Effect size must be positive")
@@ -890,9 +890,9 @@ wp.mrt2arm <- function(n = NULL, f = NULL, J = NULL, tau00 = NULL, tau11 = NULL,
         1)) 
         stop("Power must be numeric in [0, 1]")
     
-    if (is.null(tau11) && (type == 1 || type == 3)) 
+    if (is.null(tau11) && (type == "main" || type == "variance")) 
         stop("For this type of test, variance of treatment main effects across sites must be specified")
-    if (is.null(tau00) && type == 2) 
+    if (is.null(tau00) && type == "site") 
         stop("For this type of test, variance of site means must be specified")
     
     ## test treatment main effect #no tau00 needed
@@ -1130,6 +1130,9 @@ wp.logistic <- function(n = NULL, p0 = NULL, p1 = NULL, alpha = 0.05, power = NU
     if (!is.null(power) & !is.numeric(power) || any(0 > power | power > 
         1)) 
         stop(sQuote("power"), " must be numeric in [0, 1]")
+    if (!(family %in% c("Bernoulli", 
+        "exponential", "lognormal", "normal", "Poisson", "uniform"))) 
+        stop ("family must be one of Bernoulli, exponential, lognormal, normal, Poisson, or uniform")
     
     alternative <- match.arg(alternative)
     tside <- switch(alternative, less = 1, two.sided = 2, greater = 3)
@@ -3440,7 +3443,7 @@ wp.mc.sem.boot<-function(model, indirect=NULL, nobs=100, nrep=1000, nboot=1000, 
 	power<-apply(all.sig, 2, mean, na.rm=TRUE)
 	cvg<-apply(all.cvg, 2, mean, na.rm=TRUE)
 	info<-list(nobs=nobs, nrep=nrep, alpha=alpha, method="Normal", bootstrap=nboot)
-	print(power)
+	## print(power)
 	object<-list(power=power, coverage=cvg, pop.value=par.value, results=list(estimates=all.par, se=all.se, all=res), info=info, out=temp.res, data=newdata)
 	class(object)<-'power'
 	return(object)
@@ -3751,7 +3754,7 @@ wp.mc.chisq.diff <- function(full.model.pop, full.model, reduced.model, N=100, R
   power <- mean(chi.diff > qchisq(1-alpha, df))
   list(power=power, df=df, chi.dff=chi.diff)
   
-  structure(list(n = N, power = power, df=df, chi.dff=chi.diff, alpha = alpha), class = "webpower")
+  structure(list(n = N, power = power, df=df, alpha = alpha), class = "webpower")
 }
 
 sem.effect.size <- function(full.model.pop, reduced.model){

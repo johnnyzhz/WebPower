@@ -1,7 +1,7 @@
 Package: WebPower
 Title: Basic and Advanced Statistical Power Analysis
-Version: 0.8.6
-Date: 2022-07-23
+Version: 0.9.0
+Date: 2023-04-16
 Authors@R: c(person("Zhiyong", "Zhang", role = c("aut", "cre"),
                      email = "johnnyzhz@gmail.com"),
               person("Yujiao", "Mai", role = "aut"),
@@ -12,7 +12,7 @@ Author: Zhiyong Zhang [aut, cre],
   Miao Yang [ctb]
 Maintainer: Zhiyong Zhang <johnnyzhz@gmail.com>
 Depends: R (>= 3.2.5), MASS, stats, grDevices, graphics, lme4, lavaan,
-        parallel, PearsonDS
+        parallel, PearsonDS, dplyr
 License: GPL (>= 3)
 Description: This is a collection of tools for conducting both basic and advanced statistical power analysis including correlation, proportion, t-test, one-way ANOVA, two-way ANOVA, linear regression, logistic regression, Poisson regression, mediation analysis, longitudinal data analysis, structural equation modeling and multilevel modeling. It also serves as the engine for conducting power analysis online at <https://webpower.psychstat.org>.
 URL: https://webpower.psychstat.org
@@ -20,4 +20,3 @@ Encoding: UTF-8
 LazyLoad: yes
 LazyData: yes
 NeedsCompilation: no
-
