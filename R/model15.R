@@ -30,7 +30,7 @@
 #' @examples
 #' test = wp.modmed.m15(a1 = 0.6, c = 0.2, b1 = 0.3, b2 = 0.2, c1 = 0.2, c2 = 0.1,
 #'                      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
-#'                      n = 50, nrep = 200, alpha = 0.05, b = 1000, ncore = 1)
+#'                      n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 #'print(test)
 wp.modmed.m15 <- function(a1 = 0.6, c = 0.2, b1 = 0.3, b2 = 0.5, c1 = 0.2, c2 = 0.1,
                    sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,

@@ -32,7 +32,7 @@
 #' test = wp.modmed.m58(a1 = 0.2, b1 = 0.2, c1 = 0.1, c2 = 0.1,
 #'      b2 = 0.2, b3 = 0.2, a2 = 0.2,
 #'      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
-#'      n = 50, nrep = 200, alpha = 0.05, b = 1000, ncore = 1)
+#'      n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 #' print(test)
 wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 = 0.1,
                    b3 = 0.5, sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
