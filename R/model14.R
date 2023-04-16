@@ -21,7 +21,7 @@
 #' @param nb bootstrap sample size, default to n
 #' @param w_value moderator level
 #' @param method "value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation
-#' @param ncore number of cores to use in parallel
+#' @param ncore number of cores to use, default is 1, when ncore > 1, parallel is used
 #' @param pop.cov covariance matrix, default to NULL if using the regression coefficient approach
 #' @param mu mean vector, default to NULL if using the regression coefficient approach
 #' @param varnames name of variables for the covariance matrix
@@ -29,14 +29,14 @@
 #' @export
 #' @examples
 #' test = wp.modmed.m14(a1 = 0.2, cc = 0.2, b1 = 0.5, c1 = 0.5, c2 = 0.2, sigx2 = 1,
-#'                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 100,
-#'                     nrep = 50, alpha = 0.05, b = 1000, ncore = 5)
+#'                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
+#'                     nrep = 200, alpha = 0.05, b = 1000, ncore = 1)
 #' print(test)
 wp.modmed.m14 <- function (a1 = 0.2, cc = 0.2, b1 = 0.5, c1 = 0.5, c2 = 0.2,
                            sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1,
                            sigx_w = 0.5, n = 100, nrep = 1000, alpha = 0.05,
                            b = 1000, nb = n, w_value = 0, method = "value",
-                           ncore = 5, pop.cov = NULL, mu = NULL,
+                           ncore = 1, pop.cov = NULL, mu = NULL,
                            varnames =  c('y', 'x', 'w', 'm', 'mw'))
 {
 
@@ -138,23 +138,28 @@ wp.modmed.m14 <- function (a1 = 0.2, cc = 0.2, b1 = 0.5, c1 = 0.5, c2 = 0.2,
     return(power)
   }
 
-
-  CL1 = parallel::makeCluster(ncore)
-
-  parallel::clusterExport(
-    CL1,
-    c('a1', 'cc', 'b1', 'c1', 'c2', 'sigx2', 'sigw2',
-      'sige12', 'sige22', 'sigx_w', 'n', 'nrep',
-      'alpha', 'b','nb', 'pop.cov', 'mu', 'method'
-    ),
-    envir = environment()
-  )
-  allsim <- parallel::parLapply(CL1, 1:nrep, runonce)
-  parallel::clusterExport(CL1, 'allsim', envir = environment())
-  allsim1 = t(parallel::parSapply(CL1, 1:nrep, function(i)
-    unlist(allsim[[i]])))
-  power <- colMeans(allsim1)
-  parallel::stopCluster(CL1)
+  if (ncore > 1){
+    CL1 = parallel::makeCluster(ncore)
+    
+    parallel::clusterExport(
+      CL1,
+      c('a1', 'cc', 'b1', 'c1', 'c2', 'sigx2', 'sigw2',
+        'sige12', 'sige22', 'sigx_w', 'n', 'nrep',
+        'alpha', 'b','nb', 'pop.cov', 'mu', 'method'
+      ),
+      envir = environment()
+    )
+    allsim <- parallel::parLapply(CL1, 1:nrep, runonce)
+    parallel::clusterExport(CL1, 'allsim', envir = environment())
+    allsim1 = t(parallel::parSapply(CL1, 1:nrep, function(i)
+      unlist(allsim[[i]])))
+    power <- colMeans(allsim1)
+    parallel::stopCluster(CL1)
+  }else{
+    allsim <- sapply(1:nrep, runonce)
+    power <- colMeans(t(allsim))
+  }
+  
   power.structure = structure(
     list(
       n = n,

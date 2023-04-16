@@ -22,7 +22,7 @@ wp.modmed.m7(
   nb = n,
   w_value = 0,
   method = "value",
-  ncore = 5,
+  ncore = 1,
   pop.cov = NULL,
   mu = NULL,
   varnames = c("y", "x", "w", "m", "xw")
@@ -63,7 +63,7 @@ wp.modmed.m7(
 
 \item{method}{"value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
 
-\item{ncore}{number of cores to use in parallel}
+\item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
@@ -82,6 +82,6 @@ power analysis of model 7 in Introduction to Mediation, Moderation, and Conditio
 test = wp.modmed.m7(beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
           c1 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
          sige22 = 1, sigx_w = 0.5, n = 500, nrep = 200,
-         alpha = 0.05, b = 1000, ncore = 5)
+         alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }

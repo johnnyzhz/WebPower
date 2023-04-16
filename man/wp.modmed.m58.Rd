@@ -24,7 +24,7 @@ wp.modmed.m58(
   nb = n,
   w_value = 0,
   method = "value",
-  ncore = 5,
+  ncore = 1,
   pop.cov = NULL,
   mu = NULL,
   varnames =  c('x', 'w', 'm', 'xw', 'mw', 'y')
@@ -69,7 +69,7 @@ wp.modmed.m58(
 
 \item{method}{"value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
 
-\item{ncore}{number of cores to use in parallel}
+\item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
@@ -87,6 +87,6 @@ power analysis of model 58 in Introduction to Mediation, Moderation, and Conditi
 test = wp.modmed.m58(a1 = 0.2, b1 = 0.2, c1 = 0.1, c2 = 0.1,
      b2 = 0.2, b3 = 0.2, a2 = 0.2,
      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
-     n = 100, nrep = 50, alpha = 0.05, b = 1000, ncore = 5)
+     n = 100, nrep = 50, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }
