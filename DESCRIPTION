@@ -6,10 +6,14 @@ Authors@R: c(person("Zhiyong", "Zhang", role = c("aut", "cre"),
                      email = "johnnyzhz@gmail.com"),
               person("Yujiao", "Mai", role = "aut"),
               person("Miao", "Yang", role = "ctb",
-                     email = "Miao.Yang.100@nd.edu"))
+                     email = "Miao.Yang.100@nd.edu"),
+ 	      person("Ziqian", "Xu", role = "ctb"),
+ 	      person("Conor", "McNamara", role = "ctb"))
 Author: Zhiyong Zhang [aut, cre],
   Yujiao Mai [aut],
-  Miao Yang [ctb]
+  Miao Yang [ctb],
+  Ziqian Xu [ctb],
+  Conor McNamara [ctb]
 Maintainer: Zhiyong Zhang <johnnyzhz@gmail.com>
 Depends: R (>= 3.2.5), MASS, grDevices, graphics, lme4, lavaan,
         parallel, PearsonDS
