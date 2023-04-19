@@ -78,10 +78,12 @@ power of indirect effect, direct effect, and moderation
 power analysis of model 7 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
 \examples{
+\donttest{
 # usage of wp.modmed.m7
 test = wp.modmed.m7(beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
           c1 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
           sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100,
           alpha = 0.05, b = 1000, ncore = 1)
 print(test)
+}
 }

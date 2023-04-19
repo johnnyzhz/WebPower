@@ -83,10 +83,13 @@ power of indirect effect, direct effect, and moderation
 \description{
 power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
+
 \examples{
+\donttest{
 test = wp.modmed.m58(a1 = 0.2, b1 = 0.2, c1 = 0.1, c2 = 0.1,
       b2 = 0.2, b3 = 0.2, a2 = 0.2,
       sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
       n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
+}
 }
