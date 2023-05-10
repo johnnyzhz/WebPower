@@ -5,20 +5,20 @@
 \title{model58}
 \usage{
 wp.modmed.m58(
-  a1 = 0.5,
-  b1 = 0.75,
-  c1 = 0.1,
-  a2 = 0.4,
-  b2 = 0.6,
+  c1 = 0.5,
+  a1 = 0.75,
   c2 = 0.1,
-  b3 = 0.5,
+  d1 = 0.4,
+  b1 = 0.6,
+  b2 = 0.1,
+  cp = 0.5,
   sigx2 = 1,
   sigw2 = 1,
   sige12 = 1,
   sige22 = 1,
   sigx_w = 0.4,
-  n = 500,
-  nrep = 1000,
+  n = 100,
+  nrep = 100,
   alpha = 0.05,
   b = 1000,
   nb = n,
@@ -27,23 +27,23 @@ wp.modmed.m58(
   ncore = 1,
   pop.cov = NULL,
   mu = NULL,
-  varnames =  c('x', 'w', 'm', 'xw', 'mw', 'y')
+  varnames = c("x", "w", "m", "xw", "mw", "y")
 )
 }
 \arguments{
-\item{a1}{regression coefficient of outcome (m) on moderator (w)}
+\item{c1}{regression coefficient of outcome (m) on moderator (w)}
 
-\item{b1}{regression coefficient of mediator (m) on predictor (x)}
+\item{a1}{regression coefficient of mediator (m) on predictor (x)}
 
-\item{c1}{regression coefficient of outcome (m) on the product (xw)}
+\item{c2}{regression coefficient of outcome (m) on the product (xw)}
 
-\item{a2}{regression coefficient of outcome (y) on moderator (w)}
+\item{d1}{regression coefficient of outcome (y) on moderator (w)}
 
-\item{b2}{regression coefficient of outcome (y) on mediator (m)}
+\item{b1}{regression coefficient of outcome (y) on mediator (m)}
 
-\item{c2}{regression coefficient of outcome (y) on the product (mw)}
+\item{b2}{regression coefficient of outcome (y) on the product (mw)}
 
-\item{b3}{regression coefficient of outcome (y) on predictor (x)}
+\item{cp}{regression coefficient of outcome (y) on predictor (x)}
 
 \item{sigx2}{variance of predictor (x)}
 
@@ -83,13 +83,12 @@ power of indirect effect, direct effect, and moderation
 \description{
 power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
-
 \examples{
 \donttest{
-test = wp.modmed.m58(a1 = 0.2, b1 = 0.2, c1 = 0.1, c2 = 0.1,
-      b2 = 0.2, b3 = 0.2, a2 = 0.2,
-      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
-      n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
+test = wp.modmed.m58(c1 = 0.2, a1 = 0.2, c2 = 0.1, b2 = 0.1,
+     b1 = 0.2, cp = 0.2, d1 = 0.2,
+     sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
+     n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }
 }

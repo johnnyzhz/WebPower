@@ -3,13 +3,13 @@
 #'
 #' power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 #'
-#' @param a1 regression coefficient of outcome (m) on moderator (w)
-#' @param b1 regression coefficient of mediator (m) on predictor (x)
-#' @param c1 regression coefficient of outcome (m) on the product (xw)
-#' @param a2 regression coefficient of outcome (y) on moderator (w)
-#' @param b2 regression coefficient of outcome (y) on mediator (m)
-#' @param c2 regression coefficient of outcome (y) on the product (mw)
-#' @param b3 regression coefficient of outcome (y) on predictor (x)
+#' @param c1 regression coefficient of outcome (m) on moderator (w)
+#' @param a1 regression coefficient of mediator (m) on predictor (x)
+#' @param c2 regression coefficient of outcome (m) on the product (xw)
+#' @param d1 regression coefficient of outcome (y) on moderator (w)
+#' @param b1 regression coefficient of outcome (y) on mediator (m)
+#' @param b2 regression coefficient of outcome (y) on the product (mw)
+#' @param cp regression coefficient of outcome (y) on predictor (x)
 #' @param sigx2 variance of predictor (x)
 #' @param sigw2 variance of moderator (w)
 #' @param sige12 variance of error in the first regression equation
@@ -29,47 +29,47 @@
 #' @return power of indirect effect, direct effect, and moderation
 #' @export
 #' @examples
-#' test = wp.modmed.m58(a1 = 0.2, b1 = 0.2, c1 = 0.1, c2 = 0.1,
-#'      b2 = 0.2, b3 = 0.2, a2 = 0.2,
+#' test = wp.modmed.m58(c1 = 0.2, a1 = 0.2, c2 = 0.1, b2 = 0.1,
+#'      b1 = 0.2, cp = 0.2, d1 = 0.2,
 #'      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
 #'      n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 #' print(test)
-wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 = 0.1,
-                   b3 = 0.5, sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
-                   n = 500, nrep = 1000, alpha = 0.05, b=1000, nb = n,
+wp.modmed.m58 <- function(c1 = 0.5, a1 = 0.75, c2 = 0.1, d1 = 0.4, b1 = 0.6, b2 = 0.1,
+                   cp = 0.5, sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
+                   n = 100, nrep = 100, alpha = 0.05, b = 1000, nb = n,
                    w_value = 0, method = "value", ncore = 1,
                    pop.cov = NULL, mu = NULL, varnames =  c('x', 'w', 'm', 'xw', 'mw', 'y'))
 {
   if (is.null(pop.cov) || is.null(mu)){
-    sigx_m = b1*sigx2 + a1*sigx_w
-    sigx_mw = c1*(1 + 2*sigx_w^2 / sigx2 / sigw2)*sigx2*sigw2
-    sigx_y = a2*sigx_w + b3*sigx2 + b2*sigx_m + c2*sigx_mw
+    sigx_m = a1*sigx2 + c1*sigx_w
+    sigx_mw = c2*(1 + 2*sigx_w^2 / sigx2 / sigw2)*sigx2*sigw2
+    sigx_y = d1*sigx_w + cp*sigx2 + b1*sigx_m + b2*sigx_mw
     sigx_xw = sigw_xw = 0
 
     sigw2 = sigw2
-    sigw_m = b1*sigx_w + a1*sigw2
-    sigw_mw = 3*c1*sigx_w / sqrt(sigx2) / sqrt(sigw2)*sqrt(sigx2)*(sqrt(sigw2))^3
-    sigw_y = a2*sigw2 + b3*sigx_w + b2*sigw_m + c2*sigw_mw
+    sigw_m = a1*sigx_w + c1*sigw2
+    sigw_mw = 3*c2*sigx_w / sqrt(sigx2) / sqrt(sigw2)*sqrt(sigx2)*(sqrt(sigw2))^3
+    sigw_y = d1*sigw2 + cp*sigx_w + b1*sigw_m + b2*sigw_mw
 
     sigxw2 = sigx2*sigw2 + sigx_w^2
     sigxw_w2 = 3*sigx_w*sigw2 - sigx_w*sigw2
 
-    sigm2 = b1^2*sigx2 + a1^2*sigw2 + c1^2*sigxw2 + sige12 +
-      2*b1*a1*sigx_w
-    sigm_xw = c1*sigxw2
-    sigm_mw = b1*c1*(sigx2*sigw2 + 2*sigx_w^2) + 3*a1*c1*sigx_w*sigw2 + c1*b1*sigxw2 + c1*a1*sigxw_w2
-    sigm_y = (a2 + a1*b2)*sigw_m + (b3 + b1*b2)*sigx_m + b2*c1*sigm_xw + c2*sigm_mw + b2*sige12
+    sigm2 = a1^2*sigx2 + c1^2*sigw2 + c2^2*sigxw2 + sige12 +
+      2*a1*c1*sigx_w
+    sigm_xw = c2*sigxw2
+    sigm_mw = a1*c2*(sigx2*sigw2 + 2*sigx_w^2) + 3*c1*c2*sigx_w*sigw2 + c2*a1*sigxw2 + c2*c1*sigxw_w2
+    sigm_y = (d1 + c1*b1)*sigw_m + (cp + a1*b1)*sigx_m + b1*c2*sigm_xw + b2*sigm_mw + b1*sige12
 
-    sigxw_mw = b1*sigxw2 + a1*(3*sigx_w*sigw2 - sigx_w*sigw2)
-    sigxw_y = (a2 + a1*b2)*sigw_xw + (b3 + b1*b2)*sigx_xw + b2*c1*sigxw2 + c2*sigxw_mw
+    sigxw_mw = a1*sigxw2 + c1*(3*sigx_w*sigw2 - sigx_w*sigw2)
+    sigxw_y = (d1 + c1*b1)*sigw_xw + (cp + a1*b1)*sigx_xw + b1*c2*sigxw2 + b2*sigxw_mw
 
     sigxw22 = 3*sigx2*sigw2^2 - 3*sigx_w^2*sigw2 + 15*sigx_w^2*sigw2
     sige1w2 = sige12*sigw2
 
-    sigmw2 = b1^2*sigxw2 + 2*a1^2*sigw2^2 + c1^2*sigxw22 + sige1w2 + 2*b1*a1*sigxw_w2
-    sigmw_y = (a2 + a1*b2)*sigw_mw + (b3 + b1*b2)*sigx_mw + b2*c1*sigxw_mw + c2*sigmw2
+    sigmw2 = a1^2*sigxw2 + 2*c1^2*sigw2^2 + c2^2*sigxw22 + sige1w2 + 2*a1*c1*sigxw_w2
+    sigmw_y = (d1 + c1*b1)*sigw_mw + (cp + a1*b1)*sigx_mw + b1*c2*sigxw_mw + b2*sigmw2
 
-    sigy2 = (a2 + a1*b2)^2*sigw2 + (b3 + b1*b2)^2*sigx2 + (b2*c1)^2*sigxw2 + c2^2*sigmw2 + b2^2*sige12 + sige22 + 2*(a2 + a1*b2)*(b3 + b1*b2)*sigx_w + 2*(a2 + a1*b2)*b2*c1*sigw_xw + 2*(a2 + a1*b2)*c2*sigw_mw + 2*(b3 + b1*b2)*c2*sigx_mw + 2*b2*c1*c2*sigxw_mw
+    sigy2 = (d1 + c1*b1)^2*sigw2 + (cp + a1*b1)^2*sigx2 + (b1*c2)^2*sigxw2 + b2^2*sigmw2 + b1^2*sige12 + sige22 + 2*(d1 + c1*b1)*(cp + a1*b1)*sigx_w + 2*(d1 + c1*b1)*b1*c2*sigw_xw + 2*(d1 + c1*b1)*b2*sigw_mw + 2*(cp + a1*b1)*b2*sigx_mw + 2*b1*c2*b2*sigxw_mw
 
 
     pop.cov=array(c(sigx2, sigx_w, sigx_m, sigx_xw, sigx_mw, sigx_y, 0, 0,
@@ -77,15 +77,15 @@ wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 
                     sigx_m, sigw_m, sigm2, sigm_xw, sigm_mw, sigm_y, sige12, 0,
                     sigx_xw, sigw_xw, sigm_xw, sigxw2, sigxw_mw, sigxw_y, 0, 0,
                     sigx_mw, sigw_mw, sigm_mw, sigxw_mw, sigmw2, sigmw_y, 0, 0,
-                    sigx_y, sigw_y, sigm_y, sigxw_y, sigmw_y, sigy2, b2*sige12, sige22,
-                    0, 0, sige12, 0, 0, b2*sige12, sige12, 0,
+                    sigx_y, sigw_y, sigm_y, sigxw_y, sigmw_y, sigy2, b1*sige12, sige22,
+                    0, 0, sige12, 0, 0, b1*sige12, sige12, 0,
                     0, 0, 0, 0, 0, sige22, 0, sige22), dim=c(8, 8))
 
     pop.cov = pop.cov[1:6, 1:6]
     u_xw = sigx_w
-    u_m = c1*u_xw
-    u_mw = b1*u_xw + a1*sigw2
-    u_y = b2*u_m + c2*u_mw
+    u_m = c2*u_xw
+    u_mw = a1*u_xw + c1*sigw2
+    u_y = b1*u_m + b2*u_mw
     mu = c(0, 0, u_m, u_xw, u_mw, u_y)
     rownames(pop.cov) = colnames(pop.cov) = c('x', 'w', 'm', 'xw', 'mw', 'y')
   }else{
@@ -112,29 +112,29 @@ wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 
       boot_CI1 = (test_boot1$coefficients[2] + test_boot1$coefficients[4]*w_value)
       boot_CI2 = (test_boot2$coefficients[3] + test_boot2$coefficients[5]*w_value)
       boot_DI = test_boot2$coefficients[2]
-      boot_c1 = test_boot1$coefficients[4]
-      boot_c2 = test_boot2$coefficients[5]
-      return(list(boot_CI, boot_DI, boot_c1, boot_c2, boot_CI1, boot_CI2))
+      boot_c2 = test_boot1$coefficients[4]
+      boot_b2 = test_boot2$coefficients[5]
+      return(list(boot_CI, boot_DI, boot_c2, boot_b2, boot_CI1, boot_CI2))
     }
     boot_effect = lapply(1:b, bootstrap)
     boot_CI = matrix(0, ncol = 1, nrow = b)
     boot_CI1 = matrix(0, ncol = 1, nrow = b)
     boot_CI2 = matrix(0, ncol = 1, nrow = b)
     boot_DI = matrix(0, ncol = 1, nrow = b)
-    boot_c1 = matrix(0, ncol = 1, nrow = b)
     boot_c2 = matrix(0, ncol = 1, nrow = b)
+    boot_b2 = matrix(0, ncol = 1, nrow = b)
 
     boot_CI = t(sapply(1:b,function(i) unlist(boot_effect[[i]][1])))
     boot_DI = as.matrix(sapply(1:b,function(i) unlist(boot_effect[[i]][2])))
-    boot_c1 = as.matrix(sapply(1:b,function(i) unlist(boot_effect[[i]][3])))
-    boot_c2 = as.matrix(sapply(1:b,function(i) unlist(boot_effect[[i]][4])))
+    boot_c2 = as.matrix(sapply(1:b,function(i) unlist(boot_effect[[i]][3])))
+    boot_b2 = as.matrix(sapply(1:b,function(i) unlist(boot_effect[[i]][4])))
     boot_CI1 = t(sapply(1:b,function(i) unlist(boot_effect[[i]][5])))
     boot_CI2 = t(sapply(1:b,function(i) unlist(boot_effect[[i]][6])))
 
     interval_CI = matrix(0, ncol = 1, nrow = 2)
     interval_DI = matrix(0, ncol = 1, nrow = 2)
-    interval_c1 = matrix(0, ncol = 1, nrow = 2)
     interval_c2 = matrix(0, ncol = 1, nrow = 2)
+    interval_b2 = matrix(0, ncol = 1, nrow = 2)
     interval_CI1 = matrix(0, ncol = 1, nrow = 2)
     interval_CI2 = matrix(0, ncol = 1, nrow = 2)
 
@@ -150,18 +150,18 @@ wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 
     interval_DI[, 1] = quantile(boot_DI[, 1],
                                 probs = c(alpha / 2, 1 - alpha / 2),
                                 names = T)
-    interval_c1[, 1] = quantile(boot_c1[, 1],
+    interval_c2[, 1] = quantile(boot_c2[, 1],
                                 probs = c(alpha / 2, 1 - alpha / 2),
                                 names = T)
-    interval_c2[, 1] = quantile(boot_c2[, 1],
+    interval_b2[, 1] = quantile(boot_b2[, 1],
                                 probs = c(alpha / 2, 1 - alpha / 2),
                                 names = T)
 
     r_CI = as.numeric(!sapply(1,function(i) dplyr::between(0,interval_CI[1,i],interval_CI[2,i])))
     r_DI = as.numeric(!sapply(1,function(i) dplyr::between(0,interval_DI[1,i],interval_DI[2,i])))
-    r_c1 = as.numeric(!sapply(1,function(i) dplyr::between(0,interval_c1[1,i],interval_c1[2,i])))
     r_c2 = as.numeric(!sapply(1,function(i) dplyr::between(0,interval_c2[1,i],interval_c2[2,i])))
-    power = c(r_CI, r_DI, r_c1, r_c2)
+    r_b2 = as.numeric(!sapply(1,function(i) dplyr::between(0,interval_b2[1,i],interval_b2[2,i])))
+    power = c(r_CI, r_DI, r_c2, r_b2)
     if (method == "joint"){
       r_CI = as.numeric(!dplyr::between(0,interval_CI1[1,1], interval_CI1[2,1]))*as.numeric(!dplyr::between(0, interval_CI2[1,1], interval_CI2[2,1]))
     }
@@ -169,7 +169,7 @@ wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 
   }
   if (ncore > 1){
     CL1 = parallel::makeCluster(ncore)
-    parallel::clusterExport(CL1,c('a1', 'b1', 'c1', 'c2', 'b2', 'b3', 'a2',
+    parallel::clusterExport(CL1,c('c1', 'a1', 'c2', 'b2', 'b1', 'cp', 'd1',
                                   'sigx2', 'sigw2', 'sige12', 'sige22', 'sigx_w',
                                   'n', 'nrep', 'alpha','b','nb','pop.cov',
                                   'mu', 'method', 'w_value'),envir = environment())
@@ -198,9 +198,7 @@ wp.modmed.m58 <- function(a1 = 0.5, b1 = 0.75, c1 = 0.1, a2 = 0.4, b2 = 0.6, c2 
                  note="power1 is the power of the conditional indirect effect of x on y through m.
 power2 is  the power of the direct effect of x on y.
 power3 is the power of moderation on the path x to m.
-power4 is the powe of moderation on the path m to y."), class = "webpower")
+power4 is the power of moderation on the path m to y."), class = "webpower")
   return(power.structure)
 
 }
-
-

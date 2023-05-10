@@ -6,18 +6,18 @@
 \usage{
 wp.modmed.m15(
   a1 = 0.6,
-  c = 0.2,
+  cp = 0.2,
   b1 = 0.3,
   b2 = 0.5,
-  c1 = 0.2,
-  c2 = 0.1,
+  d1 = 0.2,
+  d2 = 0.1,
   sigx2 = 1,
   sigw2 = 1,
   sige12 = 1,
   sige22 = 1,
   sigx_w = 0.4,
-  n = 500,
-  nrep = 1000,
+  n = 100,
+  nrep = 100,
   alpha = 0.05,
   b = 1000,
   nb = n,
@@ -32,15 +32,15 @@ wp.modmed.m15(
 \arguments{
 \item{a1}{regression coefficient of mediator (m) on predictor (x)}
 
-\item{c}{regression coefficient of outcome (y) on predictor (x)}
+\item{cp}{regression coefficient of outcome (y) on predictor (x)}
 
 \item{b1}{regression coefficient of outcome (y) on mediator (m)}
 
 \item{b2}{regression coefficient of outcome (y) on the product (mw)}
 
-\item{c1}{regression coefficient of outcome (y) on moderator (w)}
+\item{d1}{regression coefficient of outcome (y) on moderator (w)}
 
-\item{c2}{regression coefficient of outcome (y) on the product (xw)}
+\item{d2}{regression coefficient of outcome (y) on the product (xw)}
 
 \item{sigx2}{variance of predictor (x)}
 
@@ -80,12 +80,11 @@ power of indirect effect, direct effect, and moderation
 \description{
 power analysis of model 15 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
-
 \examples{
 \donttest{
-test = wp.modmed.m15(a1 = 0.6, c = 0.2, b1 = 0.3, b2 = 0.2, c1 = 0.2, c2 = 0.1,
-                      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
-                      n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
+test = wp.modmed.m15(a1 = 0.6, cp = 0.2, b1 = 0.3, b2 = 0.2, d1 = 0.2, d2 = 0.1,
+                     sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
+                     n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }
 }

@@ -5,18 +5,18 @@
 \title{model7}
 \usage{
 wp.modmed.m7(
-  beta1 = 0.39,
-  beta2 = 0.2,
-  beta3 = 0.3,
   a1 = 0.39,
-  c1 = 0.2,
+  cp = 0.2,
+  b1 = 0.3,
+  c1 = 0.39,
+  c2 = 0.2,
   sigx2 = 1,
   sigw2 = 1,
   sige12 = 1,
   sige22 = 1,
   sigx_w = 0.5,
-  n = 500,
-  nrep = 1000,
+  n = 100,
+  nrep = 100,
   alpha = 0.05,
   b = 1000,
   nb = n,
@@ -29,15 +29,15 @@ wp.modmed.m7(
 )
 }
 \arguments{
-\item{beta1}{regression coefficient of mediator (m) on predictor (x)}
+\item{a1}{regression coefficient of mediator (m) on predictor (x)}
 
-\item{beta2}{regression coefficient of outcome (y) on predictor (x)}
+\item{cp}{regression coefficient of outcome (y) on predictor (x)}
 
-\item{beta3}{regression coefficient of outcome (y) on mediator (m)}
+\item{b1}{regression coefficient of outcome (y) on mediator (m)}
 
-\item{a1}{regression coefficient of mediator (m) on moderator (w)}
+\item{c1}{regression coefficient of mediator (m) on moderator (w)}
 
-\item{c1}{regression coefficient of mediator (m) on the product (xw)}
+\item{c2}{regression coefficient of mediator (m) on the product (xw)}
 
 \item{sigx2}{variance of predictor (x)}
 
@@ -80,10 +80,10 @@ power analysis of model 7 in Introduction to Mediation, Moderation, and Conditio
 \examples{
 \donttest{
 # usage of wp.modmed.m7
-test = wp.modmed.m7(beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
-          c1 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
-          sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100,
-          alpha = 0.05, b = 1000, ncore = 1)
+test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
+          c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
+         sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100,
+         alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }
 }

@@ -6,17 +6,17 @@
 \usage{
 wp.modmed.m14(
   a1 = 0.2,
-  cc = 0.2,
+  cp = 0.2,
   b1 = 0.5,
-  c1 = 0.5,
-  c2 = 0.2,
+  d1 = 0.5,
+  b2 = 0.2,
   sigx2 = 1,
   sigw2 = 1,
   sige12 = 1,
   sige22 = 1,
   sigx_w = 0.5,
   n = 100,
-  nrep = 1000,
+  nrep = 100,
   alpha = 0.05,
   b = 1000,
   nb = n,
@@ -31,13 +31,13 @@ wp.modmed.m14(
 \arguments{
 \item{a1}{regression coefficient of mediator (m) on predictor (x)}
 
-\item{cc}{regression coefficient of outcome (y) on predictor (x)}
+\item{cp}{regression coefficient of outcome (y) on predictor (x)}
 
 \item{b1}{regression coefficient of outcome (y) on mediator (m)}
 
-\item{c1}{regression coefficient of outcome (y) on moderator (w)}
+\item{d1}{regression coefficient of outcome (y) on moderator (w)}
 
-\item{c2}{regression coefficient of outcome (y) on the product (mw)}
+\item{b2}{regression coefficient of outcome (y) on the product (mw)}
 
 \item{sigx2}{variance of predictor (x)}
 
@@ -79,9 +79,9 @@ power analysis of model 14 in Introduction to Mediation, Moderation, and Conditi
 }
 \examples{
 \donttest{
-test = wp.modmed.m14(a1 = 0.2, cc = 0.2, b1 = 0.5, c1 = 0.5, c2 = 0.2, sigx2 = 1,
-                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
-                     nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
+test = wp.modmed.m14(a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2, sigx2 = 1,
+                    sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
+                    nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }
 }

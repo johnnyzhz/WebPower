@@ -4,11 +4,11 @@
 #'
 #' power analysis of model 7 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 #'
-#' @param beta1 regression coefficient of mediator (m) on predictor (x)
-#' @param beta2 regression coefficient of outcome (y) on predictor (x)
-#' @param beta3 regression coefficient of outcome (y) on mediator (m)
-#' @param a1 regression coefficient of mediator (m) on moderator (w)
-#' @param c1 regression coefficient of mediator (m) on the product (xw)
+#' @param a1 regression coefficient of mediator (m) on predictor (x)
+#' @param cp regression coefficient of outcome (y) on predictor (x)
+#' @param b1 regression coefficient of outcome (y) on mediator (m)
+#' @param c1 regression coefficient of mediator (m) on moderator (w)
+#' @param c2 regression coefficient of mediator (m) on the product (xw)
 #' @param sigx2 variance of predictor (x)
 #' @param sigw2 variance of moderator (w)
 #' @param sige12 variance of error in the first regression equation
@@ -29,14 +29,14 @@
 #' @export
 #' @examples
 #' # usage of wp.modmed.m7
-#' test = wp.modmed.m7(beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
-#'           c1 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
+#' test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
+#'           c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
 #'          sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100,
 #'          alpha = 0.05, b = 1000, ncore = 1)
 #' print(test)
-wp.modmed.m7 <- function (beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
-                  c1 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
-                  sige22 = 1, sigx_w = 0.5, n = 500, nrep = 1000,
+wp.modmed.m7 <- function (a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
+                  c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
+                  sige22 = 1, sigx_w = 0.5, n = 100, nrep = 100,
                   alpha = 0.05, b = 1000, nb = n, w_value = 0, method="value",
                   ncore = 1, pop.cov = NULL, mu = NULL,
                   varnames = c('y', 'x', 'w', 'm', 'xw'))
@@ -44,30 +44,30 @@ wp.modmed.m7 <- function (beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
 
   if (is.null(pop.cov) || is.null(mu)){
     sigxw2 = sigx2*sigw2 + sigx_w^2
-    sigm_x = beta1*sigx2 + a1*sigx_w
-    sigm_w = beta1*sigx_w + a1*sigw2
-    sigm_xw = c1*sigxw2
-    sigm2 = beta1^2*sigx2 + a1^2*sigw2 + c1^2*sigxw2 + sige12 + 2*beta1*a1*sigx_w
-    sigy_x = (beta2 + beta3*beta1)*sigx2 + beta3*a1*sigx_w
-    sigy_w = (beta2 + beta3*beta1)*sigx_w + beta3*a1*sigw2
-    sigy_xw = beta3*c1*sigxw2
-    sigy_m = beta2*sigm_x + beta3*sigm2
-    sigy2 = (beta2 + beta3*beta1)^2*sigx2 + beta3^2*a1^2*sigw2 + beta3^2*c1^2*sigxw2 + beta3^2*sige12 + sige22 + 2*beta3*a1*(beta2 + beta3*beta1)*sigx_w
+    sigm_x = a1*sigx2 + c1*sigx_w
+    sigm_w = a1*sigx_w + c1*sigw2
+    sigm_xw = c2*sigxw2
+    sigm2 = a1^2*sigx2 + c1^2*sigw2 + c2^2*sigxw2 + sige12 + 2*a1*c1*sigx_w
+    sigy_x = (cp + b1*a1)*sigx2 + b1*c1*sigx_w
+    sigy_w = (cp + b1*a1)*sigx_w + b1*c1*sigw2
+    sigy_xw = b1*c2*sigxw2
+    sigy_m = cp*sigm_x + b1*sigm2
+    sigy2 = (cp + b1*a1)^2*sigx2 + b1^2*c1^2*sigw2 + b1^2*c2^2*sigxw2 + b1^2*sige12 + sige22 + 2*b1*c1*(cp + b1*a1)*sigx_w
 
-    pop.cov = array(c(sigy2, sigy_x, sigy_w, sigy_m, sigy_xw, beta3*sige12,sige22,
+    pop.cov = array(c(sigy2, sigy_x, sigy_w, sigy_m, sigy_xw, b1*sige12,sige22,
                     sigy_x, sigx2, sigx_w, sigm_x, 0, 0, 0,
                     sigy_w, sigx_w, sigw2, sigm_w, 0, 0, 0,
                     sigy_m, sigm_x, sigm_w, sigm2, sigm_xw, sige12, 0,
                     sigy_xw, 0, 0, sigm_xw, sigxw2, 0, 0,
-                    beta3*sige12, 0, 0, sige12, 0, sige12, 0,
+                    b1*sige12, 0, 0, sige12, 0, sige12, 0,
                     sige22, 0, 0, 0, 0, 0, sige22),
                     dim = c(7, 7))
     pop.cov = pop.cov[1:5, 1:5]
     colnames(pop.cov) = rownames(pop.cov)=c('y','x','w','m','xw')
     # means
     u_xw = sigx_w
-    u_m = c1*u_xw
-    u_y = beta3*u_m
+    u_m = c2*u_xw
+    u_y = b1*u_m
     mu = c(u_y, 0, 0, u_m, u_xw)
   }else{
     pop.cov = pop.cov
@@ -141,7 +141,7 @@ wp.modmed.m7 <- function (beta1 = 0.39, beta2 = 0.2, beta3 = 0.3, a1 = 0.39,
   }
   if (ncore > 1){
     CL1 = parallel::makeCluster(ncore)
-    parallel::clusterExport(CL1, c('beta1', 'beta2', 'beta3', 'a1', 'c1',
+    parallel::clusterExport(CL1, c('a1', 'cp', 'b1', 'c1', 'c2',
                                    'sigx2', 'sigw2', 'sige12', 'sige22', 'sigx_w',
                                    'n', 'nrep', 'alpha', 'b', 'nb', 'pop.cov',
                                    'method', 'mu', 'w_value'), envir = environment())
@@ -169,7 +169,6 @@ power2 is the power of the direct effect of x on  y.
 power3 is the power of moderation on the path x to m."), class = "webpower")
   return(power.structure)
 }
-
 
 
 
