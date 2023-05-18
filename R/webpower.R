@@ -756,7 +756,7 @@ wp.crt2arm <- function(n = NULL, f = NULL, J = NULL, icc = NULL, power = NULL,
     #### 
     if (is.null(power)) 
         power <- eval(p.body) else if (is.null(J)) 
-        J <- nuniroot(function(J) eval(p.body) - power, ifelse(is.null(interval), c(2 + 1e-10, 1000), interval))$root else if (is.null(n)) 
+        J <- nuniroot(function(J) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(2 + 1e-10, 1000), interval))$root else if (is.null(n)) 
         n <- nuniroot(function(n) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1, 1e+06), interval))$root else if (is.null(f)) 
         f <- nuniroot(function(f) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(1e-07, 1e+07), interval))$root else if (is.null(icc)) 
         icc <- nuniroot(function(icc) eval(p.body) - power, ifelse(rep(is.null(interval), 2), c(0, 1), interval))$root else if (is.null(alpha)) 
