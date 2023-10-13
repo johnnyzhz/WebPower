@@ -5,26 +5,28 @@
 \title{model58}
 \usage{
 wp.modmed.m58(
-  c1 = 0.5,
-  a1 = 0.75,
-  c2 = 0.1,
-  d1 = 0.4,
-  b1 = 0.6,
-  b2 = 0.1,
-  cp = 0.5,
+  c1,
+  a1,
+  c2,
+  d1,
+  b1,
+  b2,
+  cp,
+  sige12,
+  sige22,
+  sigx_w,
+  n,
   sigx2 = 1,
   sigw2 = 1,
-  sige12 = 1,
-  sige22 = 1,
-  sigx_w = 0.4,
-  n = 100,
-  nrep = 100,
+  nrep = 1000,
   alpha = 0.05,
   b = 1000,
   nb = n,
   w_value = 0,
-  method = "value",
+  power_method = "product",
+  MCrep = 1000,
   ncore = 1,
+  simulation_method = "percentile",
   pop.cov = NULL,
   mu = NULL,
   varnames = c("x", "w", "m", "xw", "mw", "y")
@@ -45,10 +47,6 @@ wp.modmed.m58(
 
 \item{cp}{regression coefficient of outcome (y) on predictor (x)}
 
-\item{sigx2}{variance of predictor (x)}
-
-\item{sigw2}{variance of moderator (w)}
-
 \item{sige12}{variance of error in the first regression equation}
 
 \item{sige22}{variance of error in the second regression equation}
@@ -57,19 +55,27 @@ wp.modmed.m58(
 
 \item{n}{sample size}
 
-\item{nrep}{number of replications}
+\item{sigx2}{variance of predictor (x)}
+
+\item{sigw2}{variance of moderator (w)}
+
+\item{nrep}{number of replications for finding power}
 
 \item{alpha}{type 1 error rate}
 
-\item{b}{number of bootstrap iterations}
+\item{b}{number of bootstrap iterations used when simulation method is "percentile"}
 
-\item{nb}{bootstrap sample size, default to n}
+\item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
 \item{w_value}{moderator level}
 
-\item{method}{"value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
+\item{power_method}{"product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
+
+\item{MCrep}{number of repetitions used for finding distribution when simulation method is "MC"}
 
 \item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
+
+\item{simulation_method}{"percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
@@ -84,11 +90,9 @@ power of indirect effect, direct effect, and moderation
 power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
 \examples{
-\donttest{
 test = wp.modmed.m58(c1 = 0.2, a1 = 0.2, c2 = 0.1, b2 = 0.1,
-     b1 = 0.2, cp = 0.2, d1 = 0.2,
+     b1 = 0.2, cp = 0.2, d1 = 0.2, w_value = 0.3, simulation_method = "MC",
      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
-     n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
+     n = 50, nrep = 1000, alpha = 0.05, ncore = 1)
 print(test)
-}
 }

@@ -5,23 +5,25 @@
 \title{model7}
 \usage{
 wp.modmed.m7(
-  a1 = 0.39,
-  cp = 0.2,
-  b1 = 0.3,
-  c1 = 0.39,
-  c2 = 0.2,
+  a1,
+  cp,
+  b1,
+  c1,
+  c2,
+  sige12,
+  sige22,
+  sigx_w,
+  n,
   sigx2 = 1,
   sigw2 = 1,
-  sige12 = 1,
-  sige22 = 1,
-  sigx_w = 0.5,
-  n = 100,
-  nrep = 100,
+  nrep = 1000,
   alpha = 0.05,
   b = 1000,
   nb = n,
   w_value = 0,
-  method = "value",
+  power_method = "product",
+  simulation_method = "percentile",
+  MCrep = 1000,
   ncore = 1,
   pop.cov = NULL,
   mu = NULL,
@@ -39,10 +41,6 @@ wp.modmed.m7(
 
 \item{c2}{regression coefficient of mediator (m) on the product (xw)}
 
-\item{sigx2}{variance of predictor (x)}
-
-\item{sigw2}{variance of moderator (w)}
-
 \item{sige12}{variance of error in the first regression equation}
 
 \item{sige22}{variance of error in the second regression equation}
@@ -51,17 +49,25 @@ wp.modmed.m7(
 
 \item{n}{sample size}
 
-\item{nrep}{number of replications}
+\item{sigx2}{variance of predictor (x)}
+
+\item{sigw2}{variance of moderator (w)}
+
+\item{nrep}{number of replications for finding power}
 
 \item{alpha}{type 1 error rate}
 
-\item{b}{number of bootstrap iterations}
+\item{b}{number of bootstrap iterations used when simulation method is "percentile"}
 
-\item{nb}{bootstrap sample size, default to n}
+\item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
 \item{w_value}{moderator level}
 
-\item{method}{"value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
+\item{power_method}{"product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
+
+\item{simulation_method}{"percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation}
+
+\item{MCrep}{number of repetitions used for finding distribution when simulation method is "MC"}
 
 \item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
 
@@ -78,12 +84,10 @@ power of indirect effect, direct effect, and moderation
 power analysis of model 7 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
 \examples{
-\donttest{
 # usage of wp.modmed.m7
 test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
           c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
-         sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100,
-         alpha = 0.05, b = 1000, ncore = 1)
+         sige22 = 1, sigx_w = 0.5, n = 50, nrep = 1000, simulation_method = "MC",
+         alpha = 0.05, MCrep = 1000, ncore = 1)
 print(test)
-}
 }

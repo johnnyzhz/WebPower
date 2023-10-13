@@ -15,12 +15,14 @@
 #' @param sige22 variance of error in the second regression equation
 #' @param sigx_w covariance between predictor (x) and moderator (w)
 #' @param n sample size
-#' @param nrep number of replications
+#' @param nrep number of replications for finding power
 #' @param alpha type 1 error rate
-#' @param b number of bootstrap iterations
-#' @param nb bootstrap sample size, default to n
+#' @param b number of bootstrap iterations used when simulation method is "percentile"
+#' @param MCrep number of repetitions used for finding distribution when simulation method is "MC"
+#' @param nb bootstrap sample size, default to n, used when simulation method is "percentile"
 #' @param w_value moderator level
-#' @param method "value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation
+#' @param power_method "product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation
+#' @param simulation_method "percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation
 #' @param ncore number of cores to use, default is 1, when ncore > 1, parallel is used
 #' @param pop.cov covariance matrix, default to NULL if using the regression coefficient approach
 #' @param mu mean vector, default to NULL if using the regression coefficient approach
@@ -30,15 +32,16 @@
 #' @examples
 #' test = wp.modmed.m14(a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2, sigx2 = 1,
 #'                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
-#'                     nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
+#'                     w_value = 0.5, simulation_method = "MC",
+#'                     nrep = 1000, alpha = 0.05, b = 1000, ncore = 1)
 #' print(test)
-wp.modmed.m14 <- function (a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2,
-                           sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1,
-                           sigx_w = 0.5, n = 100, nrep = 100, alpha = 0.05,
-                           b = 1000, nb = n, w_value = 0, method = "value",
+wp.modmed.m14 <- function (a1, cp, b1, d1, b2, sige12, sige22, n,  sigx_w,
+                           sigx2 = 1, sigw2 = 1,
+                           nrep = 1000, alpha = 0.05,
+                           b = 1000, nb = n, MCrep = 1000, w_value = 0,
+                           power_method = "product", simulation_method = "percentile",
                            ncore = 1, pop.cov = NULL, mu = NULL,
-                           varnames =  c('y', 'x', 'w', 'm', 'mw'))
-{
+                           varnames =  c('y', 'x', 'w', 'm', 'mw')){
 
   if (is.null(pop.cov) || is.null(mu)) {
     sigm2 = a1^2*sigx2 + sige12
@@ -74,66 +77,105 @@ wp.modmed.m14 <- function (a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2,
   }
 
   runonce <- function(i) {
-    simdata <- MASS::mvrnorm(n, mu = mu, Sigma = pop.cov)
-    simdata <- as.data.frame(simdata)
-    test_a <- lm(m ~ x, data = simdata)
-    test_b <- lm(y ~ x + m + w + mw, data = simdata)
-
-    bootstrap = function(i) {
-      boot_dataint = sample.int(n, nb, replace = T)
-      boot_data = simdata[boot_dataint, ]
-      test_boot1 = lm(m ~ x, data = boot_data)
-      test_boot2 = lm(y ~ x + m + w + mw, data = boot_data)
-      boot_CI = test_boot1$coefficients[2]*(test_boot2$coefficients[3] + test_boot2$coefficients[5]*w_value)
-      boot_CD = test_boot2$coefficients[2]
-      boot_b2 = as.numeric(test_boot2$coefficients[5])
-      boot_CI1 = test_boot1$coefficients[2]
-      boot_CI2 = (test_boot2$coefficients[3] + test_boot2$coefficients[5]*w_value)
-      return(list(boot_CI, boot_CD, boot_b2, boot_CI1, boot_CI2))
+    if (simulation_method == "percentile"){
+      simdata <- MASS::mvrnorm(n, mu = mu, Sigma = pop.cov)
+      simdata <- as.data.frame(simdata)
+      test_a <- lm(m ~ x, data = simdata)
+      test_b <- lm(y ~ x + m + w + mw, data = simdata)
+      
+      bootstrap = function(i) {
+        boot_dataint = sample.int(n, nb, replace = T)
+        boot_data = simdata[boot_dataint, ]
+        test_boot1 = lm(m ~ x, data = boot_data)
+        test_boot2 = lm(y ~ x + m + w + mw, data = boot_data)
+        boot_CI = test_boot1$coefficients[2]*(test_boot2$coefficients[3] + test_boot2$coefficients[5]*w_value)
+        boot_CD = test_boot2$coefficients[2]
+        boot_b2 = as.numeric(test_boot2$coefficients[5])
+        boot_CI1 = test_boot1$coefficients[2]
+        boot_CI2 = (test_boot2$coefficients[3] + test_boot2$coefficients[5]*w_value)
+        return(list(boot_CI, boot_CD, boot_b2, boot_CI1, boot_CI2))
+      }
+      boot_effect = lapply(1:b, bootstrap)
+      boot_CI = matrix(0, ncol = 1, nrow = b)
+      boot_CD = matrix(0, ncol = 1, nrow = b)
+      boot_b2 = matrix(0, ncol = 1, nrow = b)
+      boot_CI1 = matrix(0, ncol = 1, nrow = b)
+      boot_CI2 = matrix(0, ncol = 1, nrow = b)
+      
+      boot_CI = t(sapply(1:b, function(i) unlist(boot_effect[[i]][1])))
+      boot_CD = t(sapply(1:b, function(i) unlist(boot_effect[[i]][2])))
+      boot_b2 = t(sapply(1:b, function(i) unlist(boot_effect[[i]][3])))
+      boot_CI1 = t(sapply(1:b, function(i) unlist(boot_effect[[i]][4])))
+      boot_CI2 = t(sapply(1:b, function(i) unlist(boot_effect[[i]][5])))
+      
+      
+      interval_CI = matrix(0, ncol = 1, nrow = 2)
+      interval_CI1 = matrix(0, ncol = 1, nrow = 2)
+      interval_CI2 = matrix(0, ncol = 1, nrow = 2)
+      interval_CD = matrix(0, ncol = 1, nrow = 2)
+      interval_b2 = matrix(0, ncol = 1, nrow = 2)
+      
+      interval_CI[, 1] = quantile(boot_CI,
+                                  probs = c(alpha / 2, 1 - alpha / 2),
+                                  names = T)
+      interval_CI1[, 1] = quantile(boot_CI1,
+                                   probs = c(alpha / 2, 1 - alpha / 2),
+                                   names = T)
+      interval_CI2[, 1] = quantile(boot_CI2,
+                                   probs = c(alpha / 2, 1 - alpha / 2),
+                                   names = T)
+      interval_CD[, 1] = quantile(boot_CD,
+                                  probs = c(alpha / 2, 1 - alpha / 2),
+                                  names = T)
+      interval_b2[, 1] = quantile(boot_b2,
+                                  probs = c(alpha / 2, 1 - alpha / 2),
+                                  names = T)
+      
+      
+      r_CI = as.numeric(!sapply(1, function(i) dplyr::between(0, interval_CI[1, i], interval_CI[2, i])))
+      r_CD = as.numeric(!sapply(1, function(i) dplyr::between(0, interval_CD[1, i], interval_CD[2, i])))
+      r_b2 = as.numeric(!sapply(1, function(i) dplyr::between(0, interval_b2[1, i], interval_b2[2, i])))
+      if (power_method == "joint") {
+        r_CI = as.numeric(!dplyr::between(0, interval_CI1[1, 1], interval_CI1[2, 1]))*as.numeric(!dplyr::between(0, interval_CI2[1, 1], interval_CI2[2, 1]))
+      }
+    }else if (simulation_method == "MC"){
+      simdata <- MASS::mvrnorm(n, mu = mu, Sigma = pop.cov)
+      simdata <- as.data.frame(simdata)
+      test_a <- lm(m ~ x, data = simdata)
+      test_b <- lm(y ~ x + m + w + mw, data = simdata)
+      
+      a1_mean <- summary(test_a)$coefficients[2, 1]
+      cp_mean <- summary(test_b)$coefficients[2, 1]
+      b1_mean <- summary(test_b)$coefficients[3, 1]
+      b2_mean <- summary(test_b)$coefficients[5, 1]
+      d1_mean <- summary(test_b)$coefficients[4, 1]
+      
+      a1_se <- summary(test_a)$coefficients[2, 2]
+      cp_se <- summary(test_b)$coefficients[2, 2]
+      b1_se <- summary(test_b)$coefficients[3, 2]
+      b2_se <- summary(test_b)$coefficients[5, 2]
+      d1_se <- summary(test_b)$coefficients[4, 2]
+      
+      
+      path1_dist <- rnorm(MCrep, a1_mean, a1_se) 
+      path2_dist <- rnorm(MCrep, b1_mean, b1_se) + rnorm(MCrep, b2_mean, b2_se)*w_value
+      med_dist <- path1_dist*path2_dist
+      b2_dist <- rnorm(MCrep, b2_mean, b2_se)
+      cp_dist <- rnorm(MCrep, cp_mean, cp_se)
+      path1_interval <- quantile(path1_dist, probs = c(alpha / 2, 1 - alpha / 2))
+      path2_interval <- quantile(path2_dist, probs = c(alpha / 2, 1 - alpha / 2))
+      med_interval <- quantile(med_dist, probs = c(alpha / 2, 1 - alpha / 2))
+      b2_interval <- quantile(b2_dist, probs = c(alpha / 2, 1 - alpha / 2))
+      cp_interval <- quantile(cp_dist, probs = c(alpha / 2, 1 - alpha / 2))
+      
+      r_CI = as.numeric(!dplyr::between(0, med_interval[1], med_interval[2]))
+      r_CD = as.numeric(!dplyr::between(0, cp_interval[1], cp_interval[2]))
+      r_b2 = as.numeric(!dplyr::between(0, b2_interval[1], b2_interval[2]))
+      if (power_method == "joint") {
+        r_CI = as.numeric(!dplyr::between(0, path1_interval[1], path1_interval[2]))*as.numeric(!dplyr::between(0, path2_interval[1], path2_interval[2]))
+      }
     }
-    boot_effect = lapply(1:b, bootstrap)
-    boot_CI = matrix(0, ncol = 1, nrow = b)
-    boot_CD = matrix(0, ncol = 1, nrow = b)
-    boot_b2 = matrix(0, ncol = 1, nrow = b)
-    boot_CI1 = matrix(0, ncol = 1, nrow = b)
-    boot_CI2 = matrix(0, ncol = 1, nrow = b)
-
-    boot_CI = t(sapply(1:b, function(i) unlist(boot_effect[[i]][1])))
-    boot_CD = t(sapply(1:b, function(i) unlist(boot_effect[[i]][2])))
-    boot_b2 = t(sapply(1:b, function(i) unlist(boot_effect[[i]][3])))
-    boot_CI1 = t(sapply(1:b, function(i) unlist(boot_effect[[i]][4])))
-    boot_CI2 = t(sapply(1:b, function(i) unlist(boot_effect[[i]][5])))
-
-
-    interval_CI = matrix(0, ncol = 1, nrow = 2)
-    interval_CI1 = matrix(0, ncol = 1, nrow = 2)
-    interval_CI2 = matrix(0, ncol = 1, nrow = 2)
-    interval_CD = matrix(0, ncol = 1, nrow = 2)
-    interval_b2 = matrix(0, ncol = 1, nrow = 2)
-
-    interval_CI[, 1] = quantile(boot_CI,
-                                probs = c(alpha / 2, 1 - alpha / 2),
-                                names = T)
-    interval_CI1[, 1] = quantile(boot_CI1,
-                                 probs = c(alpha / 2, 1 - alpha / 2),
-                                 names = T)
-    interval_CI2[, 1] = quantile(boot_CI2,
-                                 probs = c(alpha / 2, 1 - alpha / 2),
-                                 names = T)
-    interval_CD[, 1] = quantile(boot_CD,
-                                probs = c(alpha / 2, 1 - alpha / 2),
-                                names = T)
-    interval_b2[, 1] = quantile(boot_b2,
-                                probs = c(alpha / 2, 1 - alpha / 2),
-                                names = T)
-
-
-    r_CI = as.numeric(!sapply(1, function(i) dplyr::between(0, interval_CI[1, i], interval_CI[2, i])))
-    r_CD = as.numeric(!sapply(1, function(i) dplyr::between(0, interval_CD[1, i], interval_CD[2, i])))
-    r_b2 = as.numeric(!sapply(1, function(i) dplyr::between(0, interval_b2[1, i], interval_b2[2, i])))
-    if (method == "joint") {
-      r_CI = as.numeric(!dplyr::between(0, interval_CI1[1, 1], interval_CI1[2, 1]))*as.numeric(!dplyr::between(0, interval_CI2[1, 1], interval_CI2[2, 1]))
-    }
+    
     power = c(r_CI, r_CD, r_b2)
     return(power)
   }
@@ -178,7 +220,6 @@ power3 is the power of moderation on the path m to y."
     class = "webpower"
   )
   return(power.structure)
-
+  
 }
-
 

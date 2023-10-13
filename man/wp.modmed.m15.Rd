@@ -5,27 +5,29 @@
 \title{model15}
 \usage{
 wp.modmed.m15(
-  a1 = 0.6,
-  cp = 0.2,
-  b1 = 0.3,
-  b2 = 0.5,
-  d1 = 0.2,
-  d2 = 0.1,
+  a1,
+  cp,
+  b1,
+  b2,
+  d1,
+  d2,
+  sige12,
+  sige22,
+  sigx_w,
+  n,
   sigx2 = 1,
   sigw2 = 1,
-  sige12 = 1,
-  sige22 = 1,
-  sigx_w = 0.4,
-  n = 100,
-  nrep = 100,
+  nrep = 1000,
   alpha = 0.05,
   b = 1000,
   nb = n,
   w_value = 0,
-  method = "value",
+  power_method = "product",
+  simulation_method = "percentile",
   ncore = 1,
   pop.cov = NULL,
   mu = NULL,
+  MCrep = 1000,
   varnames = c("y", "x", "w", "m", "xw", "mw")
 )
 }
@@ -42,10 +44,6 @@ wp.modmed.m15(
 
 \item{d2}{regression coefficient of outcome (y) on the product (xw)}
 
-\item{sigx2}{variance of predictor (x)}
-
-\item{sigw2}{variance of moderator (w)}
-
 \item{sige12}{variance of error in the first regression equation}
 
 \item{sige22}{variance of error in the second regression equation}
@@ -54,23 +52,31 @@ wp.modmed.m15(
 
 \item{n}{sample size}
 
-\item{nrep}{number of replications}
+\item{sigx2}{variance of predictor (x)}
+
+\item{sigw2}{variance of moderator (w)}
+
+\item{nrep}{number of replications for finding power}
 
 \item{alpha}{type 1 error rate}
 
-\item{b}{number of bootstrap iterations}
+\item{b}{number of bootstrap iterations used when simulation method is "percentile"}
 
-\item{nb}{bootstrap sample size, default to n}
+\item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
 \item{w_value}{moderator level}
 
-\item{method}{"value" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
+\item{power_method}{"product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
+
+\item{simulation_method}{"percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation}
 
 \item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
 \item{mu}{mean vector, default to NULL if using the regression coefficient approach}
+
+\item{MCrep}{number of repetitions used for finding distribution when simulation method is "MC"}
 
 \item{varnames}{name of variables for the covariance matrix}
 }
@@ -81,10 +87,9 @@ power of indirect effect, direct effect, and moderation
 power analysis of model 15 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
 \examples{
-\donttest{
 test = wp.modmed.m15(a1 = 0.6, cp = 0.2, b1 = 0.3, b2 = 0.2, d1 = 0.2, d2 = 0.1,
                      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
-                     n = 50, nrep = 100, alpha = 0.05, b = 1000, ncore = 1)
+                     w_value = 0.3, simulation_method = "MC",
+                     n = 50, nrep = 1000, alpha = 0.05, ncore = 1)
 print(test)
-}
 }
