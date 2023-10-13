@@ -3,7 +3,6 @@
 \docType{package}
 \name{print.webpower}
 \alias{print.webpower}
-\alias{print.webpower-package}
 \title{To Print Statistical Power Analysis Results}
 \usage{
 \method{print}{webpower}(x, ...)
