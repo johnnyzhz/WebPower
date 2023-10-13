@@ -90,6 +90,7 @@ power of indirect effect, direct effect, and moderation
 power analysis of model 8 in Introduction to Mediation, Moderation, and Conditional Process Analysis
 }
 \examples{
+\donttest{
 # usage of wp.modmed.m8
 test = wp.modmed.m8(a1 = 0.2, cp = 0.2, b1 = 0.2,
                    c1 = 0.2, d1=0.2, c2 = 0.2, d2 = 0.2,
@@ -97,4 +98,9 @@ test = wp.modmed.m8(a1 = 0.2, cp = 0.2, b1 = 0.2,
                    simulation_method = "MC", 
                    n = 50, nrep = 1000, alpha = 0.05, MCrep = 1000, ncore = 1)
 print(test)
+}
+}
+\references{
+Xu, Z., Gao, F., Fa, A., Qu, W., & Zhang, Z. (2023). Statistical Power Analysis and Sample Size Planning for Moderated Mediation Models.
+Zhang, Z., & Yuan, K.-H. (2018). Practical Statistical Power Analysis Using Webpower and R (Eds). Granger, IN: ISDSA Press.
 }
