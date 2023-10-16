@@ -192,8 +192,8 @@ wp.modmed.m7 <- function (a1, cp, b1, c1, c2, sige12, sige22, sigx_w, n,
     CL1 = parallel::makeCluster(ncore)
     parallel::clusterExport(CL1, c('a1', 'cp', 'b1', 'c1', 'c2',
                                    'sigx2', 'sigw2', 'sige12', 'sige22', 'sigx_w',
-                                   'n', 'nrep', 'alpha', 'b', 'nb', 'pop.cov',
-                                   'method', 'mu', 'w_value'), envir = environment())
+                                   'n', 'nrep', 'alpha', 'b', 'nb', 'pop.cov', 'simulation_method',
+                                   'power_method','mu', 'w_value', 'MCrep'), envir = environment())
     allsim <- parallel::parLapply(CL1,1:nrep, runonce)
     parallel::clusterExport(CL1, 'allsim', envir = environment())
     allsim1 = t(parallel::parSapply(CL1, 1:nrep, function(i) unlist(allsim[[i]])))
@@ -219,10 +219,10 @@ power3 is the power of moderation on the path x to m."), class = "webpower")
   return(power.structure)
 }
 
-# usage of wp.modmed.m7
+
 # test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
 #           c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
 #          sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100, simulation_method = "MC",
-#          alpha = 0.05, MCrep = 1000, ncore = 1)
+#          alpha = 0.05, MCrep = 1000, ncore = 2)
 # print(test)
 

@@ -203,7 +203,8 @@ wp.modmed.m8 <- function (a1, cp, b1, c1, d1, c2, d2, sige12, sige22, sigx_w, n,
     parallel::clusterExport(CL1, c('a1', 'cp', 'b1', 'c1', 'd1', 'c2','d2',
                                    'sigx2', 'sigw2', 'sige12', 'sige22', 'sigx_w',
                                    'n', 'nrep', 'alpha', 'b', 'nb', 'pop.cov',
-                                   'mu', 'w_value', 'method'), envir = environment())
+                                   'mu', 'w_value', 'simulation_method',
+                                   'power_method', 'MCrep'), envir = environment())
     allsim <- parallel::parLapply(CL1, 1:nrep, runonce)
     parallel::clusterExport(CL1, 'allsim', envir=environment())
     allsim1 = t(parallel::parSapply(CL1, 1:nrep, function(i) unlist(allsim[[i]])))
@@ -235,5 +236,5 @@ power4 is the power of moderation on the path x to y."), class = "webpower")
 #                    c1 = 0.2, d1=0.2, c2 = 0.2, d2 = 0.2,
 #                    sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
 #                    simulation_method = "MC",
-#                    n = 50, nrep = 1000, alpha = 0.05, MCrep = 1000, ncore = 1)
+#                    n = 50, nrep = 1000, alpha = 0.05, MCrep = 1000, ncore = 2)
 # print(test)

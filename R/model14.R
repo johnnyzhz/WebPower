@@ -187,7 +187,8 @@ wp.modmed.m14 <- function (a1, cp, b1, d1, b2, sige12, sige22, n,  sigx_w,
       CL1,
       c('a1', 'cp', 'b1', 'd1', 'b2', 'sigx2', 'sigw2',
         'sige12', 'sige22', 'sigx_w', 'n', 'nrep',
-        'alpha', 'b','nb', 'pop.cov', 'mu', 'method'
+        'alpha', 'b','nb', 'pop.cov', 'mu', 'simulation_method',
+        'power_method', 'MCrep'
       ),
       envir = environment()
     )
@@ -223,3 +224,8 @@ power3 is the power of moderation on the path m to y."
   
 }
 
+# test = wp.modmed.m14(a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2, sigx2 = 1,
+#                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
+#                     w_value = 0.5, simulation_method = "MC",
+#                     nrep = 1000, alpha = 0.05, b = 1000, ncore = 2)
+# print(test)
