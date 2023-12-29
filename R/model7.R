@@ -15,15 +15,14 @@
 #' @param sige22 variance of error in the second regression equation
 #' @param sigx_w covariance between predictor (x) and moderator (w)
 #' @param n sample size
-#' @param nrep number of replications for finding power
+#' @param nrep_power number of replications for finding power
 #' @param alpha type 1 error rate
-#' @param b number of bootstrap iterations used when simulation method is "percentile"
-#' @param MCrep number of repetitions used for finding distribution when simulation method is "MC"
+#' @param b number of bootstrap iterations
 #' @param nb bootstrap sample size, default to n, used when simulation method is "percentile"
 #' @param w_value moderator level
 #' @param power_method "product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation
 #' @param simulation_method "percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation
-#' @param ncore number of cores to use, default is 1, when ncore > 1, parallel is used
+#' @param ncore number of cores to use for the percentile bootstrap method, default is 1, when ncore > 1, parallel is used
 #' @param pop.cov covariance matrix, default to NULL if using the regression coefficient approach
 #' @param mu mean vector, default to NULL if using the regression coefficient approach
 #' @param varnames name of variables for the covariance matrix
@@ -33,15 +32,15 @@
 #' # usage of wp.modmed.m7
 #' test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
 #'           c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
-#'          sige22 = 1, sigx_w = 0.5, n = 50, nrep = 1000, simulation_method = "MC",
-#'          alpha = 0.05, MCrep = 1000, ncore = 1)
+#'          sige22 = 1, sigx_w = 0.5, n = 50, b = 1000, nrep_power = 1000, simulation_method = "MC",
+#'          alpha = 0.05, ncore = 1)
 #' print(test)
 wp.modmed.m7 <- function (a1, cp, b1, c1, c2, sige12, sige22, sigx_w, n,
-                  sigx2 = 1, sigw2 = 1, nrep = 1000,
+                  sigx2 = 1, sigw2 = 1, nrep_power = 1000,
                   alpha = 0.05, b = 1000, nb = n, w_value = 0, 
                   power_method="product",
                   simulation_method = "percentile",
-                  MCrep = 1000, ncore = 1, pop.cov = NULL, mu = NULL,
+                  ncore = 1, pop.cov = NULL, mu = NULL,
                   varnames = c('y', 'x', 'w', 'm', 'xw'))
 {
 
@@ -147,29 +146,26 @@ wp.modmed.m7 <- function (a1, cp, b1, c1, c2, sige12, sige22, sigx_w, n,
       
       
     }else if (simulation_method == "MC"){
+      ncore = 1
       ### monte carlo CI
       simdata <- MASS::mvrnorm(n, mu = mu, Sigma = pop.cov)
       simdata <- as.data.frame(simdata)
-      test_a <- lm(m ~ x + w + xw, data = simdata)
-      test_b <- lm(y ~ x + m, data = simdata)
+      model <- '
+        m ~ x + w + xw
+        y ~ x + m
+      '
       
-      a1_mean <- summary(test_a)$coefficients[2, 1]
-      c1_mean <- summary(test_a)$coefficients[3, 1]
-      c2_mean <- summary(test_a)$coefficients[4, 1]
-      cp_mean <- summary(test_b)$coefficients[2, 1]
-      b1_mean <- summary(test_b)$coefficients[3, 1]
+      fit <- lavaan::sem(model = model, data = simdata)
+      covm <- lavaan::vcov(fit)
+      means <- lavaan::coef(fit)
       
-      a1_se <- summary(test_a)$coefficients[2, 2]
-      c1_se <- summary(test_a)$coefficients[3, 2]
-      c2_se <- summary(test_a)$coefficients[4, 2]
-      cp_se <- summary(test_b)$coefficients[2, 2]
-      b1_se <- summary(test_b)$coefficients[3, 2]
+      simmc <- MASS::mvrnorm(b, mu = means, Sigma = covm)
       
-      path1_dist <- rnorm(MCrep, a1_mean, a1_se) + rnorm(MCrep, c2_mean, c2_se)*w_value
-      path2_dist <- rnorm(MCrep, b1_mean, b1_se)
+      path1_dist <- simmc[,1] + simmc[,3]*w_value
+      path2_dist <- simmc[,5]
       med_dist <- path1_dist*path2_dist
-      c2_dist <- rnorm(MCrep, c2_mean, c2_se)
-      cp_dist <- rnorm(MCrep, cp_mean, cp_se)
+      c2_dist <- simmc[,3]
+      cp_dist <- simmc[,4]
       path1_interval <- quantile(path1_dist, probs = c(alpha / 2, 1 - alpha / 2))
       path2_interval <- quantile(path2_dist, probs = c(alpha / 2, 1 - alpha / 2))
       med_interval <- quantile(med_dist, probs = c(alpha / 2, 1 - alpha / 2))
@@ -192,21 +188,22 @@ wp.modmed.m7 <- function (a1, cp, b1, c1, c2, sige12, sige22, sigx_w, n,
     CL1 = parallel::makeCluster(ncore)
     parallel::clusterExport(CL1, c('a1', 'cp', 'b1', 'c1', 'c2',
                                    'sigx2', 'sigw2', 'sige12', 'sige22', 'sigx_w',
-                                   'n', 'nrep', 'alpha', 'b', 'nb', 'pop.cov', 'simulation_method',
-                                   'power_method','mu', 'w_value', 'MCrep'), envir = environment())
-    allsim <- parallel::parLapply(CL1,1:nrep, runonce)
+                                   'n', 'nrep_power',
+                                   'alpha', 'b', 'nb', 'pop.cov', 'simulation_method',
+                                   'power_method','mu', 'w_value'), envir = environment())
+    allsim <- parallel::parLapply(CL1,1:nrep_power, runonce)
     parallel::clusterExport(CL1, 'allsim', envir = environment())
-    allsim1 = t(parallel::parSapply(CL1, 1:nrep, function(i) unlist(allsim[[i]])))
+    allsim1 = t(parallel::parSapply(CL1, 1:nrep_power, function(i) unlist(allsim[[i]])))
     power <- colMeans(allsim1)
     parallel::stopCluster(CL1)
   }else{
-    allsim <- sapply(1:nrep,runonce)
+    allsim <- sapply(1:nrep_power,runonce)
     power <- colMeans(t(allsim))
   }
 
   power.structure = structure(list(n = n,
                                  alpha = alpha,
-                                 samples = nrep,
+                                 samples = nrep_power,
                                  w = w_value,
                                  power1 = power[1],
                                  power2 = power[2],
@@ -220,9 +217,9 @@ power3 is the power of moderation on the path x to m."), class = "webpower")
 }
 
 
+
 # test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
 #           c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
-#          sige22 = 1, sigx_w = 0.5, n = 50, nrep = 100, simulation_method = "MC",
-#          alpha = 0.05, MCrep = 1000, ncore = 2)
+#          sige22 = 1, sigx_w = 0.5, n = 50, b = 100, nrep_power = 100, simulation_method = "MC",
+#          alpha = 0.05, ncore = 1)
 # print(test)
-

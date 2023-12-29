@@ -16,14 +16,13 @@ wp.modmed.m7(
   n,
   sigx2 = 1,
   sigw2 = 1,
-  nrep = 1000,
+  nrep_power = 1000,
   alpha = 0.05,
   b = 1000,
   nb = n,
   w_value = 0,
   power_method = "product",
   simulation_method = "percentile",
-  MCrep = 1000,
   ncore = 1,
   pop.cov = NULL,
   mu = NULL,
@@ -53,11 +52,11 @@ wp.modmed.m7(
 
 \item{sigw2}{variance of moderator (w)}
 
-\item{nrep}{number of replications for finding power}
+\item{nrep_power}{number of replications for finding power}
 
 \item{alpha}{type 1 error rate}
 
-\item{b}{number of bootstrap iterations used when simulation method is "percentile"}
+\item{b}{number of bootstrap iterations}
 
 \item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
@@ -67,9 +66,7 @@ wp.modmed.m7(
 
 \item{simulation_method}{"percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation}
 
-\item{MCrep}{number of repetitions used for finding distribution when simulation method is "MC"}
-
-\item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
+\item{ncore}{number of cores to use for the percentile bootstrap method, default is 1, when ncore > 1, parallel is used}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
@@ -88,12 +85,8 @@ power analysis of model 7 in Introduction to Mediation, Moderation, and Conditio
 # usage of wp.modmed.m7
 test = wp.modmed.m7(a1 = 0.39, cp = 0.2, b1 = 0.3, c1 = 0.39,
           c2 = 0.2, sigx2 = 1, sigw2 = 1, sige12 = 1,
-         sige22 = 1, sigx_w = 0.5, n = 50, nrep = 1000, simulation_method = "MC",
-         alpha = 0.05, MCrep = 1000, ncore = 1)
+         sige22 = 1, sigx_w = 0.5, n = 50, b = 1000, nrep_power = 1000, simulation_method = "MC",
+         alpha = 0.05, ncore = 1)
 print(test)
 }
-}
-\references{
-Xu, Z., Gao, F., Fa, A., Qu, W., & Zhang, Z. (2023). Statistical Power Analysis and Sample Size Planning for Moderated Mediation Models.
-Zhang, Z., & Yuan, K.-H. (2018). Practical Statistical Power Analysis Using Webpower and R (Eds). Granger, IN: ISDSA Press.
 }

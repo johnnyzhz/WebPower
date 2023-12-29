@@ -17,7 +17,7 @@ wp.modmed.m15(
   n,
   sigx2 = 1,
   sigw2 = 1,
-  nrep = 1000,
+  nrep_power = 1000,
   alpha = 0.05,
   b = 1000,
   nb = n,
@@ -27,7 +27,6 @@ wp.modmed.m15(
   ncore = 1,
   pop.cov = NULL,
   mu = NULL,
-  MCrep = 1000,
   varnames = c("y", "x", "w", "m", "xw", "mw")
 )
 }
@@ -56,11 +55,11 @@ wp.modmed.m15(
 
 \item{sigw2}{variance of moderator (w)}
 
-\item{nrep}{number of replications for finding power}
+\item{nrep_power}{number of replications for finding power}
 
 \item{alpha}{type 1 error rate}
 
-\item{b}{number of bootstrap iterations used when simulation method is "percentile"}
+\item{b}{number of bootstrap iterations}
 
 \item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
@@ -70,13 +69,11 @@ wp.modmed.m15(
 
 \item{simulation_method}{"percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation}
 
-\item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
+\item{ncore}{number of cores to use for the percentile bootstrap method, default is 1, when ncore > 1, parallel is used}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
 \item{mu}{mean vector, default to NULL if using the regression coefficient approach}
-
-\item{MCrep}{number of repetitions used for finding distribution when simulation method is "MC"}
 
 \item{varnames}{name of variables for the covariance matrix}
 }
@@ -91,11 +88,7 @@ power analysis of model 15 in Introduction to Mediation, Moderation, and Conditi
 test = wp.modmed.m15(a1 = 0.6, cp = 0.2, b1 = 0.3, b2 = 0.2, d1 = 0.2, d2 = 0.1,
                      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
                      w_value = 0.3, simulation_method = "MC",
-                     n = 50, nrep = 1000, alpha = 0.05, ncore = 1)
+                     n = 50, nrep_power = 1000, b = 1000, alpha = 0.05, ncore = 1)
 print(test)
 }
-}
-\references{
-Xu, Z., Gao, F., Fa, A., Qu, W., & Zhang, Z. (2023). Statistical Power Analysis and Sample Size Planning for Moderated Mediation Models.
-Zhang, Z., & Yuan, K.-H. (2018). Practical Statistical Power Analysis Using Webpower and R (Eds). Granger, IN: ISDSA Press.
 }

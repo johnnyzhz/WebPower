@@ -16,11 +16,10 @@ wp.modmed.m14(
   sigx_w,
   sigx2 = 1,
   sigw2 = 1,
-  nrep = 1000,
+  nrep_power = 1000,
   alpha = 0.05,
   b = 1000,
   nb = n,
-  MCrep = 1000,
   w_value = 0,
   power_method = "product",
   simulation_method = "percentile",
@@ -53,15 +52,13 @@ wp.modmed.m14(
 
 \item{sigw2}{variance of moderator (w)}
 
-\item{nrep}{number of replications for finding power}
+\item{nrep_power}{number of replications for finding power}
 
 \item{alpha}{type 1 error rate}
 
-\item{b}{number of bootstrap iterations used when simulation method is "percentile"}
+\item{b}{number of bootstrap iterations}
 
 \item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
-
-\item{MCrep}{number of repetitions used for finding distribution when simulation method is "MC"}
 
 \item{w_value}{moderator level}
 
@@ -69,7 +66,7 @@ wp.modmed.m14(
 
 \item{simulation_method}{"percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation}
 
-\item{ncore}{number of cores to use, default is 1, when ncore > 1, parallel is used}
+\item{ncore}{number of cores to use for the percentile bootstrap method, default is 1, when ncore > 1, parallel is used}
 
 \item{pop.cov}{covariance matrix, default to NULL if using the regression coefficient approach}
 
@@ -88,11 +85,7 @@ power analysis of model 14 in Introduction to Mediation, Moderation, and Conditi
 test = wp.modmed.m14(a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2, sigx2 = 1,
                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
                     w_value = 0.5, simulation_method = "MC",
-                    nrep = 1000, alpha = 0.05, b = 1000, ncore = 1)
+                    nrep_power = 1000, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
 }
-}
-\references{
-Xu, Z., Gao, F., Fa, A., Qu, W., & Zhang, Z. (2023). Statistical Power Analysis and Sample Size Planning for Moderated Mediation Models.
-Zhang, Z., & Yuan, K.-H. (2018). Practical Statistical Power Analysis Using Webpower and R (Eds). Granger, IN: ISDSA Press.
 }
