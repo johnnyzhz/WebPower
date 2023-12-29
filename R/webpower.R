@@ -348,7 +348,7 @@ wp.t1 <- function(n = NULL, d = NULL, alpha = 0.05, power = NULL, type = c("two.
         }
         if (ttside == 1) {
             d <- uniroot(function(d) eval(p.body) - power, c(-10, 5), tol = tol, 
-                extendInt = "upX")$root
+                extendInt = "downX")$root
         }
         if (ttside == 3) {
             d <- uniroot(function(d) eval(p.body) - power, c(-5, 10), tol = tol, 
