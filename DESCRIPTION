@@ -21,6 +21,7 @@ Imports: dplyr, stats
 License: GPL (>= 3)
 Description: This is a collection of tools for conducting both basic and advanced statistical power analysis including correlation, proportion, t-test, one-way ANOVA, two-way ANOVA, linear regression, logistic regression, Poisson regression, mediation analysis, longitudinal data analysis, structural equation modeling and multilevel modeling. It also serves as the engine for conducting power analysis online at <https://webpower.psychstat.org>.
 URL: https://webpower.psychstat.org
+BugReports: https://github.com/johnnyzhz/WebPower/issues
 Encoding: UTF-8
 LazyLoad: yes
 LazyData: yes
