@@ -60,7 +60,7 @@ wp.modmed.m14(
 
 \item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
-\item{w_value}{moderator level}
+\item{w_value}{moderator level, value of w}
 
 \item{power_method}{"product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
 
@@ -75,17 +75,15 @@ wp.modmed.m14(
 \item{varnames}{name of variables for the covariance matrix}
 }
 \value{
-power of indirect effect, direct effect, and moderation
+power of indirect effect, direct effect, moderation, and the index of moderated mediation
 }
 \description{
-power analysis of model 14 in Introduction to Mediation, Moderation, and Conditional Process Analysis
+power analysis of model 14 in Introduction to Mediation, Moderation, and Conditional Process Analysis. Powers are obtained through either the percentile bootstrap method or the Monte Carlo method. The conditional indirect effect value is a1(b1 + b2w); the index of moderated mediation is a1b2.
 }
 \examples{
-\donttest{
 test = wp.modmed.m14(a1 = 0.2, cp = 0.2, b1 = 0.5, d1 = 0.5, b2 = 0.2, sigx2 = 1,
                     sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5, n = 50,
                     w_value = 0.5, simulation_method = "MC",
                     nrep_power = 1000, alpha = 0.05, b = 1000, ncore = 1)
 print(test)
-}
 }

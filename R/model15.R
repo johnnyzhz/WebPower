@@ -1,7 +1,7 @@
 
 #' model15
 #'
-#' power analysis of model 15 in Introduction to Mediation, Moderation, and Conditional Process Analysis
+#' power analysis of model 15 in Introduction to Mediation, Moderation, and Conditional Process Analysis. Powers are obtained through either the percentile bootstrap method or the Monte Carlo method. The conditional indirect effect value is a1(b1 + b2w); the conditional direct effect value is cp + d2w; the index of moderated mediation is c2b1.
 #'
 #' @param a1 regression coefficient of mediator (m) on predictor (x)
 #' @param cp regression coefficient of outcome (y) on predictor (x)
@@ -19,14 +19,14 @@
 #' @param alpha type 1 error rate
 #' @param b number of bootstrap iterations 
 #' @param nb bootstrap sample size, default to n, used when simulation method is "percentile"
-#' @param w_value moderator level
+#' @param w_value moderator level, value of w
 #' @param power_method "product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation
 #' @param simulation_method "percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation
 #' @param ncore number of cores to use for the percentile bootstrap method, default is 1, when ncore > 1, parallel is used
 #' @param pop.cov covariance matrix, default to NULL if using the regression coefficient approach
 #' @param mu mean vector, default to NULL if using the regression coefficient approach
 #' @param varnames name of variables for the covariance matrix
-#' @return power of indirect effect, direct effect, and moderation
+#' @return power of indirect effect, direct effect, moderation, and the index of moderated mediation
 #' @export
 #' @examples
 #' test = wp.modmed.m15(a1 = 0.6, cp = 0.2, b1 = 0.3, b2 = 0.2, d1 = 0.2, d2 = 0.1,
@@ -41,6 +41,7 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
                    simulation_method = "percentile", ncore = 1,
                    pop.cov = NULL, mu = NULL, 
                    varnames = c('y','x','w','m','xw','mw')){
+  mmindex_theoretical = a1*b2
   if (is.null(pop.cov) || is.null(mu)){
     sigxw2 = sigx2*sigw2 + sigx_w^2
     sigm_xw = 0
@@ -100,7 +101,8 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
         boot_b2 = test_boot2$coefficients[6]
         boot_CI1 = test_boot1$coefficients[2]
         boot_CI2 = (test_boot2$coefficients[3] + test_boot2$coefficients[6]*w_value)
-        return(list(boot_CI, boot_CD, boot_d2, boot_b2, boot_CI1, boot_CI2))
+        boot_index = test_boot2$coefficients[6]*test_boot1$coefficients[2]
+        return(list(boot_CI, boot_CD, boot_d2, boot_b2, boot_CI1, boot_CI2, boot_index))
       }
       boot_effect = lapply(1:b, bootstrap)
       boot_CI = matrix(0, ncol = 1, nrow = b)
@@ -109,6 +111,7 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
       boot_CD = matrix(0, ncol = 1, nrow = b)
       boot_d2 = matrix(0, ncol = 1, nrow = b)
       boot_b2 = matrix(0, ncol = 1, nrow = b)
+      boot_index = matrix(0, ncol = 1, nrow = b)
       
       boot_CI=t(sapply(1:b,function(i) unlist(boot_effect[[i]][1])))
       boot_CD=t(sapply(1:b,function(i) unlist(boot_effect[[i]][2])))
@@ -116,6 +119,7 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
       boot_b2=t(sapply(1:b,function(i) unlist(boot_effect[[i]][4])))
       boot_CI1=t(sapply(1:b,function(i) unlist(boot_effect[[i]][5])))
       boot_CI2=t(sapply(1:b,function(i) unlist(boot_effect[[i]][6])))
+      boot_index=t(sapply(1:b,function(i) unlist(boot_effect[[i]][7])))
       
       interval_CI=matrix(0,ncol=1,nrow=2)
       interval_CI1=matrix(0,ncol=1,nrow=2)
@@ -123,6 +127,7 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
       interval_CD=matrix(0,ncol=1,nrow=2)
       interval_d2=matrix(0,ncol=1,nrow=2)
       interval_b2=matrix(0,ncol=1,nrow=2)
+      interval_index=matrix(0,ncol=1,nrow=2)
       
       interval_CI[, 1] = quantile(boot_CI,
                                   probs = c(alpha / 2, 1 - alpha / 2),
@@ -142,12 +147,15 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
       interval_b2[, 1] = quantile(boot_b2,
                                   probs = c(alpha / 2, 1 - alpha / 2),
                                   names = T)
-      
+      interval_index[, 1] = quantile(boot_index,
+                                  probs = c(alpha / 2, 1 - alpha / 2),
+                                  names = T)
       
       r_CI=as.numeric(!sapply(1,function(i) dplyr::between(0,interval_CI[1,i],interval_CI[2,i])))
       r_DI=as.numeric(!sapply(1,function(i) dplyr::between(0,interval_CD[1,i],interval_CD[2,i])))
       r_d2=as.numeric(!sapply(1:1,function(i) dplyr::between(0,interval_d2[1,i],interval_d2[2,i])))
       r_b2=as.numeric(!sapply(1:1,function(i) dplyr::between(0,interval_b2[1,i],interval_b2[2,i])))
+      r_index=as.numeric(!sapply(1:1,function(i) dplyr::between(0,interval_index[1,i],interval_index[2,i])))
       if (power_method =="joint"){
         r_CI=as.numeric(!dplyr::between(0,interval_CI1[1,1],interval_CI1[2,1]))*as.numeric(!dplyr::between(0,interval_CI2[1,1],interval_CI2[2,1]))
       }
@@ -173,23 +181,25 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
       b2_dist <- simmc[,6]
       d2_dist <- simmc[,5]
       cp_dist <- simmc[,2] + w_value*simmc[,5]
-      
+      index_dist <-simmc[,6]*simmc[,1]
       path1_interval <- quantile(path1_dist, probs = c(alpha / 2, 1 - alpha / 2))
       path2_interval <- quantile(path2_dist, probs = c(alpha / 2, 1 - alpha / 2))
       med_interval <- quantile(med_dist, probs = c(alpha / 2, 1 - alpha / 2))
       d2_interval <- quantile(d2_dist, probs = c(alpha / 2, 1 - alpha / 2))
       b2_interval <- quantile(b2_dist, probs = c(alpha / 2, 1 - alpha / 2))
       cp_interval <- quantile(cp_dist, probs = c(alpha / 2, 1 - alpha / 2))
+      index_interval <- quantile(index_dist, probs = c(alpha / 2, 1 - alpha / 2))
       
       r_CI = as.numeric(!dplyr::between(0, med_interval[1], med_interval[2]))
       r_DI = as.numeric(!dplyr::between(0, cp_interval[1], cp_interval[2]))
       r_d2 = as.numeric(!dplyr::between(0, d2_interval[1], d2_interval[2]))
       r_b2 = as.numeric(!dplyr::between(0, b2_interval[1], b2_interval[2]))
+      r_index = as.numeric(!dplyr::between(0, index_interval[1], index_interval[2]))
       if (power_method == "joint") {
         r_CI = as.numeric(!dplyr::between(0, path1_interval[1], path1_interval[2]))*as.numeric(!dplyr::between(0, path2_interval[1], path2_interval[2]))
       }
     }
-    power=c(r_CI,r_DI, r_d2, r_b2)
+    power=c(r_CI,r_DI, r_d2, r_b2, r_index)
     return(power)
   }
   if (ncore > 1){
@@ -219,18 +229,26 @@ wp.modmed.m15 <- function(a1, cp, b1, b2, d1, d2, sige12, sige22, sigx_w, n,
                                  power2 = power[2],
                                  power3 = power[3],
                                  power4 = power[4],
+                                 power5 = power[5],
+                                 indirect = a1*(b1 + b2*w_value),
+                                 direct = cp + d2*w_value,
+                                 index = a1*b2,
                  method="moderated mediation model 15",
                  url = "https://webpower.psychstat.org/models/modmed15/",
                  note = "power1 is the power value of the conditional indirect effect of x on y.
 power2 is the power value of the conditional direct effect of x on y.
 power3 is the power of moderation on the path x to y.
-power4 is the power of moderation on the path m to y."), class = "webpower")
+power4 is the power of moderation on the path m to y.
+power5 is the power of the index of moderated mediation.
+indirect is the value of the conditional indirect effect.
+direct is the value of the conditional direct effect.
+index is the value of the index of moderated mediation."), class = "webpower")
   return(power.structure)
 }
 
 # test = wp.modmed.m15(a1 = 0.6, cp = 0.2, b1 = 0.3, b2 = 0.2, d1 = 0.2, d2 = 0.1,
 #                      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.4,
 #                      w_value = 0.3, simulation_method = "MC",
-#                      n = 50, nrep_power = 100, b = 1000, alpha = 0.05, ncore = 1)
+#                      n = 50, nrep_power = 100, b = 100, alpha = 0.05, ncore = 1)
 # print(test)
 

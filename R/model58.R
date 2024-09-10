@@ -1,7 +1,7 @@
 
 #' model58
 #'
-#' power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis
+#' power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis. Powers are obtained through either the percentile bootstrap method or the Monte Carlo method. The conditional indirect effect value is (a1 + c2w)(b1 + b2w); the index of moderated mediation cannot be applied here since the conditional indirect effect is not linear. 
 #'
 #' @param c1 regression coefficient of outcome (m) on moderator (w)
 #' @param a1 regression coefficient of mediator (m) on predictor (x)
@@ -20,7 +20,7 @@
 #' @param alpha type 1 error rate
 #' @param b number of bootstrap iterations
 #' @param nb bootstrap sample size, default to n, used when simulation method is "percentile"
-#' @param w_value moderator level
+#' @param w_value moderator level, value of w
 #' @param power_method "product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation
 #' @param simulation_method "percentile" for using percentile bootstrap CI in finding significance of mediation, or "MC" for using Monte Carlo CI in finding significance of mediation
 #' @param ncore number of cores to use for the percentile bootstrap method, default is 1, when ncore > 1, parallel is used
@@ -235,12 +235,14 @@ wp.modmed.m58 <- function(c1, a1, c2, d1, b1, b2, cp, sige12, sige22, sigx_w, n,
                                  power2 = power[2],
                                  power3 = power[3],
                                  power4 = power[4],
+                                 indirect = (a1 + c2*w_value)*(b1 + b2*w_value),
                  method = "moderated mediation model 58",
                  url = "https://webpower.psychstat.org/models/modmed58/",
                  note="power1 is the power of the conditional indirect effect of x on y through m.
 power2 is  the power of the direct effect of x on y.
 power3 is the power of moderation on the path x to m.
-power4 is the power of moderation on the path m to y."), class = "webpower")
+power4 is the power of moderation on the path m to y.
+indirect is the value of the conditional indirect effect."), class = "webpower")
   return(power.structure)
   
 

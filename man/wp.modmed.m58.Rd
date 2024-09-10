@@ -66,7 +66,7 @@ wp.modmed.m58(
 
 \item{nb}{bootstrap sample size, default to n, used when simulation method is "percentile"}
 
-\item{w_value}{moderator level}
+\item{w_value}{moderator level, value of w}
 
 \item{power_method}{"product" for using the indirect effect value in power calculation, or "joint" for using joint significance in power calculation}
 
@@ -84,14 +84,12 @@ wp.modmed.m58(
 power of indirect effect, direct effect, and moderation
 }
 \description{
-power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis
+power analysis of model 58 in Introduction to Mediation, Moderation, and Conditional Process Analysis. Powers are obtained through either the percentile bootstrap method or the Monte Carlo method. The conditional indirect effect value is (a1 + c2w)(b1 + b2w); the index of moderated mediation cannot be applied here since the conditional indirect effect is not linear.
 }
 \examples{
-\donttest{
 test = wp.modmed.m58(c1 = 0.2, a1 = 0.2, c2 = 0.1, b2 = 0.1,
      b1 = 0.2, cp = 0.2, d1 = 0.2, w_value = 0.3, simulation_method = "MC",
      sigx2 = 1, sigw2 = 1, sige12 = 1, sige22 = 1, sigx_w = 0.5,
      n = 50, nrep_power = 1000, b = 1000, alpha = 0.05, ncore = 1)
 print(test)
-}
 }
